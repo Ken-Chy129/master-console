@@ -1,15 +1,31 @@
-import yayJpg from '../assets/yay.jpg';
+import React, {useState} from "react";
+import { getAppList } from '../services/api'
+import {Avatar, Card, Col, Layout, Row, Space} from "antd";
+
 
 export default function HomePage() {
+
+  const [appList,setAppList] = useState([]);
+
   return (
-    <div>
-      <h2>Yay! Welcome to umi!</h2>
-      <p>
-        <img src={yayJpg} width="388" />
-      </p>
-      <p>
-        To get started, edit <code>pages/index.tsx</code> and save to reload.
-      </p>
-    </div>
+      <div style={{margin: 25}}>
+          <Row gutter={16}>
+              <Col span={8}>
+                  <Card title="Card title" bordered={false}>
+                      Card content
+                  </Card>
+              </Col>
+              <Col span={8}>
+                  <Card title="Card title" bordered={false}>
+                      Card content
+                  </Card>
+              </Col>
+              <Col span={8}>
+                  <Card title="Card title" bordered={false}>
+                      Card content
+                  </Card>
+              </Col>
+          </Row>
+      </div>
   );
 }
