@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { getAppList } from '../services/api'
 import {Avatar, Card, Col, Layout, Row, Space} from "antd";
 
@@ -6,6 +6,12 @@ import {Avatar, Card, Col, Layout, Row, Space} from "antd";
 export default function HomePage() {
 
   const [appList,setAppList] = useState([]);
+
+  useEffect(() => {
+      getAppList().then((res: any) => {
+          setAppList(res);
+      })
+  }, [])
 
   return (
       <div style={{margin: 25}}>
