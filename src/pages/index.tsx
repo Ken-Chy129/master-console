@@ -9,7 +9,9 @@ export default function HomePage() {
 
   useEffect(() => {
       getAppList().then((res: any) => {
+          console.log(res)
           setAppList(res);
+          console.log(appList)
       })
   }, [])
 
