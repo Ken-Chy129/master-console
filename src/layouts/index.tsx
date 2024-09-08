@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Avatar, Layout, Space} from "antd";
+import {Avatar, ConfigProvider, Layout, Space} from "antd";
 import icon from "@/assets/yay.jpg";
 import {Outlet} from "umi";
 
@@ -11,20 +11,32 @@ export default function HomePage() {
     const [appList,setAppList] = useState([]);
 
     return (
-        <Layout>
-            <Header style={{ display: 'flex', alignItems: 'center' }}>
-                <Space wrap size={16}>
-                    <Avatar size={64} src={icon} />
-                    <span style={{color: "white"}}>Master</span>
-                </Space>
-            </Header>
-            <Content>
-                <Outlet/>
-            </Content>
-            <Footer style={{ textAlign: 'center' }}>
-                Ant Design ©{new Date().getFullYear()} Created by Ant UED
-            </Footer>
-        </Layout>
+        <ConfigProvider
+            theme={{
+                token: {
+                    // Seed Token，影响范围大
+                    colorPrimary: '#00b96b',
+                    borderRadius: 2,
 
+                    // 派生变量，影响范围小
+                    colorBgContainer: '#f6ffed',
+                },
+            }}
+        >
+            <Layout>
+                <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: 'lightblue' }}>
+                    <Space wrap size={16}>
+                        <Avatar size={64} src={icon} />
+                        <span style={{color: "white"}}>Master</span>
+                    </Space>
+                </Header>
+                <Content>
+                    <Outlet/>
+                </Content>
+                <Footer style={{ textAlign: 'center' }}>
+                    Ant Design ©{new Date().getFullYear()} Created by Ant UED
+                </Footer>
+            </Layout>
+        </ConfigProvider>
     );
 }

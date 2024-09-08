@@ -3,11 +3,13 @@ import { defineConfig } from 'umi';
 export default defineConfig({
     // 配置主题，实际上是配 less 变量（Ant Design 的样式变量）。
     theme: {
+        headerBg: '#1890FF',
         //全局主色
         '@primary-color': '#1890FF',  // 更多变量说明：https://ant.design/docs/react/customize-theme-cn
+        '@layout-header-background': '#40a9ff', // Header 背景颜色
     },
     // 配置全局标题。
-    title: 'xxx',
+    title: 'Master',
     // 配置mock 模拟数据 默认为true。
     mock: false,
     // 配置是否让生成的文件包含 hash 后缀，通常用于增量发布和避免浏览器加载缓存。
@@ -22,7 +24,7 @@ export default defineConfig({
     // 本地开发API接口请求代理
     proxy: {
         '/': {
-            target: 'http://localhost:8080/',
+            target: 'http://localhost:8888/',
             changeOrigin: true,
         }
     },
