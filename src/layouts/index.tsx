@@ -34,7 +34,7 @@ export default function HomePage() {
                     <Outlet/>
                 </Content>
                 <Footer style={{ textAlign: 'center' }}>
-                    Ant Design ©{new Date().getFullYear()} Created by Ant UED
+                    Master ©{new Date().getFullYear()} Created by Ken
                 </Footer>
             </Layout>
         </ConfigProvider>
