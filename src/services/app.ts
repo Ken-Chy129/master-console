@@ -1,7 +1,7 @@
 import request from "umi-request";
 
 export async function getAppList() {
-    return request('/app/list', {
+    return request('/api/app/list', {
         method: 'GET'
     })
 }
