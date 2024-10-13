@@ -1,7 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { getAppList } from '../services/app'
-import {Avatar, Card, Col, Layout, Row, Space, Spin} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
+import { Avatar, Card, Col, Layout, Row, Space, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Link } from "umi";
+import docs from "@/pages/app";
 
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -52,7 +54,7 @@ export default function HomePage() {
                                 style={{ marginBottom: 16 }}
                                 actions={[
                                     <Space>
-                                        <a href="#">查看详情</a>
+                                        <Link to={'/app/' + app.id} >查看详情</Link>
                                         <a href="#">Action 2</a>
                                     </Space>,
                                 ]}

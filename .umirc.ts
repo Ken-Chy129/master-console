@@ -20,7 +20,7 @@ export default defineConfig({
     //配置路由 注：如果没有 routes 配置，Umi 会进入约定式路由模式，然后分析 src/pages 目录拿到路由配置。
     routes: [
         { path: '/', component: 'index' },
-        { path: "/docs", component: "docs" },
+        { path: "/app/:appId", component: "app" },
     ],
     // 本地开发API接口请求代理
     proxy: {
