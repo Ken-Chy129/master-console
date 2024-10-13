@@ -14,6 +14,7 @@ const SwitchPage = () => {
     const [activeTab, setActiveTab] = useState<string>();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalContent, setModalContent] = useState<string>('');
+    const [modalTitle, setModalTitle] = useState<string>('');
 
     useEffect(() => {
         setLoading(true);
@@ -62,11 +63,13 @@ const SwitchPage = () => {
 
     const handlePushClick = (details: string) => {
         setModalContent(details);
+        setModalTitle("字段值推送");
         setIsModalVisible(true);
     };
 
     const handleDistributionClick = (details: string) => {
         setModalContent(details);
+        setModalTitle("字段值分布情况");
         setIsModalVisible(true);
     };
 
@@ -76,7 +79,7 @@ const SwitchPage = () => {
 
     const columns = [
         {
-            title: '名称',
+            title: '字段名',
             dataIndex: 'name',
             key: 'name',
             width: '30%', // 设置列宽为30%
@@ -147,7 +150,7 @@ const SwitchPage = () => {
             )}
 
             <Modal
-                title="详细信息"
+                title={modalTitle}
                 open={isModalVisible}
                 onOk={handleModalClose}
                 onCancel={handleModalClose}

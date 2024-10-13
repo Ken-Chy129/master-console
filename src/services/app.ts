@@ -27,3 +27,8 @@ export async function getFieldList(appId: string) {
     })
 }
 
+export async function getFieldValue(fieldId: string) {
+    return request('/api/field/' + fieldId, {
+        method: 'GET'
+    })
+}
