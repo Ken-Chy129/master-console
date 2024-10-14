@@ -1,7 +1,7 @@
 import request from "umi-request";
 
 export async function getAppList() {
-    return request('/api/app/list', {
+    return request('/api/master/list', {
         method: 'GET'
     })
 }
@@ -29,6 +29,12 @@ export async function getFieldList(appId: string) {
 
 export async function getFieldValue(fieldId: string) {
     return request('/api/field/' + fieldId, {
+        method: 'GET'
+    })
+}
+
+export async function getCategoryList() {
+    return request('/api/master/categories', {
         method: 'GET'
     })
 }

@@ -1,7 +1,9 @@
-type Tab = {
+type Category = {
     id: string;
     key: string;
-    name: string;
-    description?: string;
-    status?: string;
+    label: string;
+    children: Category[];
+    linkUrl?: string;
+    icon?: string;
+    disabled: boolean;
 };
