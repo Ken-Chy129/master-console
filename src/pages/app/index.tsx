@@ -1,7 +1,7 @@
 import { useParams } from "umi";
 import React, { useEffect, useState } from "react";
 import { getFieldListByNamespaceId, getNamespaceList } from "@/services/app";
-import {Tabs, List, Spin, Table, Button, Modal} from "antd";
+import {Tabs, List, Spin, Table, Button, Modal, Layout, Menu} from "antd";
 import styles from "./index.less";
 
 const SwitchPage = () => {
@@ -23,7 +23,7 @@ const SwitchPage = () => {
             .then((res: any) => {
                 if (res.success === true) {
                     if (res.data === null || res.data.length === 0) {
-                        setError('当前应用暂时没有命名空间，快去设置吧');
+                        setError('当前应用暂时没有命名空间，快去配置吧');
                         return;
                     }
                     setTabList(res.data);
@@ -101,6 +101,9 @@ const SwitchPage = () => {
                   <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handleDistributionClick(field.id)}>
                     查看分布
                   </Button>
+                  <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handlePushClick(field.id)}>
+                    查看日志
+                  </Button>
                 </span>
             ),
             width: '25%', // 设置列宽为30%
@@ -129,18 +132,6 @@ const SwitchPage = () => {
                     </button>
                 </div>
             ) : (
-                // <List
-                //     className={styles['list']}
-                //     dataSource={fieldList}
-                //     renderItem={(field) => (
-                //         <List.Item>
-                //             <List.Item.Meta
-                //                 title={field.name}
-                //                 description={field.description}
-                //             />
-                //         </List.Item>
-                //     )}
-                // />
                 <Table
                     className={styles['table']}
                     columns={columns}
