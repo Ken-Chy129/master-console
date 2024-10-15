@@ -1,7 +1,7 @@
-import request from "umi-request";
+import { request } from '@umijs/max';
 
 export async function getAppList() {
-    return request('/api/master/list', {
+    return request('/api/master/apps', {
         method: 'GET'
     })
 }

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { getAppList } from '../services/app'
 import { Avatar, Card, Col, Layout, Row, Space, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Link } from "umi";
+import {history} from "@@/core/history";
+
+import { InfoCard } from '@/components';
 import docs from "@/pages/app";
 
 
@@ -46,21 +48,27 @@ export default function HomePage() {
                 </div>
             ) : (
                 <Row gutter={[16, 16]}>
-                    {appList.map((app) => (
+                    {appList.map((app, index) => (
                         <Col span={8} key={app.id}>
-                            <Card
+                            <InfoCard
+                                index={index + 1}
+                                path={'/app/' + app.id}
                                 title={app.name}
-                                bordered={false}
-                                style={{ marginBottom: 16 }}
-                                actions={[
-                                    <Space>
-                                        <Link to={'/app/' + app.id} >查看详情</Link>
-                                        <a href="#">Action 2</a>
-                                    </Space>,
-                                ]}
-                            >
-                                <p>{app.description}</p>
-                            </Card>
+                                desc={app.description}
+                            />
+                            {/*<Card*/}
+                            {/*    title={app.name}*/}
+                            {/*    bordered={false}*/}
+                            {/*    style={{ marginBottom: 16 }}*/}
+                            {/*    actions={[*/}
+                            {/*        <Space>*/}
+                            {/*            <a onClick={() => history.push('/app/' + app.id)}>ccccc</a>*/}
+                            {/*            <a href="#">Action 2</a>*/}
+                            {/*        </Space>,*/}
+                            {/*    ]}*/}
+                            {/*>*/}
+                            {/*    <p>{app.description}</p>*/}
+                            {/*</Card>*/}
                         </Col>
                     ))}
                 </Row>
