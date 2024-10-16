@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { getFieldListByNamespaceId, getNamespaceList } from "@/services/app";
-import {Tabs, List, Spin, Table, Button, Modal, Layout, Menu} from "antd";
+import {Tabs, List, Spin, Table, Button, Modal, Layout, Menu, Form, Input, Select, Space} from "antd";
+const { Option } = Select;
 import {history} from "@umijs/max";
+import {getMachineList} from "@/services/common";
 
 const SwitchPage = () => {
     const basePath = '/app/'
-
+    const { location } = history;
+    const appId = location.pathname.replace(basePath, "");
     const [tabList, setTabList] = useState<Namespace[]>([]);
     const [fieldList, setFieldList] = useState<Field[]>([]);
     const [loading, setLoading] = useState(true);
@@ -15,9 +18,10 @@ const SwitchPage = () => {
     const [modalContent, setModalContent] = useState<string>('');
     const [modalTitle, setModalTitle] = useState<string>('');
 
+    const [machineList, setMachineList] = useState<Machine[]>([]);
+    const [form] = Form.useForm();
+
     useEffect(() => {
-        const { location } = history;
-        const appId = location.pathname.replace(basePath, "");
         setLoading(true);
         setError(null);
         getNamespaceList(appId)
@@ -65,7 +69,14 @@ const SwitchPage = () => {
     const handlePushClick = (details: string) => {
         setModalContent(details);
         setModalTitle("字段值推送");
-        setIsModalVisible(true);
+        getMachineList({appId})
+            .then((res: any) => {
+                if (res.success === true) {
+                    res.data.forEach((machine: any) => {machine.label = machine.ipAddress; machine.value = machine.ipAddress})
+                    setMachineList(res.data);
+                }
+                setIsModalVisible(true);
+            });
     };
 
     const handleDistributionClick = (details: string) => {
@@ -75,6 +86,7 @@ const SwitchPage = () => {
     };
 
     const handleModalClose = () => {
+        form.resetFields(); // 重置表单字段
         setIsModalVisible(false);
     };
 
@@ -111,6 +123,18 @@ const SwitchPage = () => {
         },
     ];
 
+    function onReset() {
+
+    }
+
+    function onFill() {
+
+    }
+
+    function onFinish() {
+
+    }
+
     return (
         <div>
             <Tabs
@@ -143,6 +167,7 @@ const SwitchPage = () => {
             <Modal
                 title={modalTitle}
                 open={isModalVisible}
+
                 onOk={handleModalClose}
                 onCancel={handleModalClose}
                 footer={[
@@ -151,9 +176,52 @@ const SwitchPage = () => {
                     </Button>,
                 ]}
             >
-                <div>
-                    <p>{modalContent}</p>
-                </div>
+                <Form
+                    form={form}
+                    name="control-hooks"
+                    onFinish={onFinish}
+                    style={{ maxWidth: 600 }}
+                >
+                    <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
+                        <Select
+                            mode="multiple"
+                            placeholder="Select a option and change input text above"
+                            allowClear
+                            options={machineList}
+                            notFoundContent={"暂无机器"}
+                        >
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        noStyle
+                        shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
+                    >
+                        {({ getFieldValue }) =>
+                            getFieldValue('gender') === 'other' ? (
+                                <Form.Item name="customizeGender" label="Customize Gender" rules={[{ required: true }]}>
+                                    <Input />
+                                </Form.Item>
+                            ) : null
+                        }
+                    </Form.Item>
+                    <Form.Item name="note" label="Note" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Space>
+                            <Button type="primary" htmlType="submit">
+                                Submit
+                            </Button>
+                            <Button htmlType="button" onClick={onReset}>
+                                Reset
+                            </Button>
+                            <Button type="link" htmlType="button" onClick={onFill}>
+                                Fill form
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                </Form>
             </Modal>
         </div>
     );

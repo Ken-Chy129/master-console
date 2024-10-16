@@ -8,7 +8,12 @@ type Category = {
     disabled: boolean;
 };
 
-export interface MenuDataItem {
+type Machine = {
+    id: string;
+    ipAddress: string;
+};
+
+type MenuDataItem = {
     authority?: string[] | string;
     children?: MenuDataItem[];
     hideChildrenInMenu?: boolean;
@@ -20,3 +25,4 @@ export interface MenuDataItem {
 
     [key: string]: any;
 }
+
