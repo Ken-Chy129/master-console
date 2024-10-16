@@ -1,6 +1,6 @@
 import { Footer, Question, SelectLang, AvatarDropdown, AvatarName } from '@/components';
 import { LinkOutlined } from '@ant-design/icons';
-import type { Settings as LayoutSettings } from '@ant-design/pro-components';
+import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-components';
 import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history, Link } from '@umijs/max';
@@ -50,6 +50,8 @@ export async function getInitialState(): Promise<{
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
+    title: "Master",
+
     actionsRender: () => [<Question key="doc" />, <SelectLang key="SelectLang" />],
     avatarProps: {
       src: initialState?.currentUser?.avatar,
@@ -101,6 +103,29 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
+    postMenuData: () => {
+      const data = [
+        {
+          "name": "Switch",
+          "path": 'app/1',
+          "children": [
+            {
+              "name": "查看列表",
+              "path": "app/2"
+            },
+            {
+              "name": "查看机器",
+              "path": ""
+            }
+          ]
+        },
+        {
+          "name": "测试",
+          "path": "app/2"
+        },
+      ]
+      return data;
+    },
     childrenRender: (children) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
