@@ -116,7 +116,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             {
               "name": "查看机器",
               "path": ""
-            }
+            },
+            {
+              "name": "查看日志",
+              "path": ""
+            },
           ]
         },
         {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAppList } from '../services/app'
+import { getAppList } from '@/services/app'
 import { Avatar, Card, Col, Layout, Row, Space, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {history} from "@@/core/history";

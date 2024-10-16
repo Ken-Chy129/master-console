@@ -1,11 +1,10 @@
-import { useParams } from "umi";
 import React, { useEffect, useState } from "react";
 import { getFieldListByNamespaceId, getNamespaceList } from "@/services/app";
 import {Tabs, List, Spin, Table, Button, Modal, Layout, Menu} from "antd";
-import styles from "./index.less";
+import {history} from "@umijs/max";
 
 const SwitchPage = () => {
-    const appId = useParams().appId || '';
+    const basePath = '/app/'
 
     const [tabList, setTabList] = useState<Namespace[]>([]);
     const [fieldList, setFieldList] = useState<Field[]>([]);
@@ -17,6 +16,8 @@ const SwitchPage = () => {
     const [modalTitle, setModalTitle] = useState<string>('');
 
     useEffect(() => {
+        const { location } = history;
+        const appId = location.pathname.replace(basePath, "");
         setLoading(true);
         setError(null);
         getNamespaceList(appId)
@@ -35,7 +36,7 @@ const SwitchPage = () => {
                 }
             })
             .finally(() => setLoading(false));
-    }, [appId]);
+    }, []);
 
     const queryFieldList = (namespaceId: string) => {
         setLoading(true);
@@ -111,7 +112,7 @@ const SwitchPage = () => {
     ];
 
     return (
-        <div className={styles['switch-page']}>
+        <div>
             <Tabs
                 activeKey={activeTab}
                 onChange={handleTabChange}
@@ -121,11 +122,11 @@ const SwitchPage = () => {
                 }))}
             />
             {loading ? (
-                <div className={styles['spin-container']}>
+                <div>
                     <Spin />
                 </div>
             ) : error ? (
-                <div className={styles['error-container']}>
+                <div>
                     <p>Error: {error}</p>
                     <button onClick={() => window.location.reload()}>
                         Retry
@@ -133,7 +134,6 @@ const SwitchPage = () => {
                 </div>
             ) : (
                 <Table
-                    className={styles['table']}
                     columns={columns}
                     dataSource={fieldList}
                     rowKey="name"
@@ -151,7 +151,7 @@ const SwitchPage = () => {
                     </Button>,
                 ]}
             >
-                <div className={styles['modal-content']}>
+                <div>
                     <p>{modalContent}</p>
                 </div>
             </Modal>
