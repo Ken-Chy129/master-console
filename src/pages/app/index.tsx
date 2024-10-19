@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getFieldListByNamespaceId, getNamespaceList } from "@/services/app";
-import {Tabs, List, Spin, Table, Button, Modal, Layout, Menu, Form, Input, Select, Space} from "antd";
+import {getFieldListByNamespaceId, getNamespaceList, updateFieldValue} from "@/services/app";
+import {Tabs, List, Spin, Table, Button, Modal, Layout, Menu, Form, Input, Select, Space, Radio, message} from "antd";
 const { Option } = Select;
 import {history} from "@umijs/max";
 import {getMachineList} from "@/services/common";
@@ -9,16 +9,17 @@ const SwitchPage = () => {
     const basePath = '/app/'
     const { location } = history;
     const appId = location.pathname.replace(basePath, "");
-    const [tabList, setTabList] = useState<Namespace[]>([]);
+    const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
     const [fieldList, setFieldList] = useState<Field[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<string>();
+    const [selectedNamespace, setSelectedNamespace] = useState<Namespace>();
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [modalContent, setModalContent] = useState<string>('');
     const [modalTitle, setModalTitle] = useState<string>('');
 
     const [machineList, setMachineList] = useState<Machine[]>([]);
+    const [selectedField, setSelectedField] = useState<Field>();
+    const [selectedPushType, setSelectedPushType] = useState<string>();
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -31,9 +32,9 @@ const SwitchPage = () => {
                         setError('当前应用暂时没有命名空间，快去配置吧');
                         return;
                     }
-                    setTabList(res.data);
+                    setNamespaceList(res.data);
                     const namespace = res.data[0];
-                    setActiveTab(namespace.id);
+                    setSelectedNamespace(namespace);
                     queryFieldList(namespace.id);
                 } else {
                     setError('获取应用命名空间失败:' + res.message);
@@ -62,12 +63,12 @@ const SwitchPage = () => {
     };
 
     const handleTabChange = (namespaceId: string) => {
-        setActiveTab(namespaceId);
+        setSelectedNamespace(namespaceList.find(value => value.id == namespaceId));
         queryFieldList(namespaceId);
     };
 
-    const handlePushClick = (details: string) => {
-        setModalContent(details);
+    const handlePushClick = (fieldId: string) => {
+        setSelectedField(fieldList.find(value => value.id === fieldId));
         setModalTitle("字段值推送");
         getMachineList({appId})
             .then((res: any) => {
@@ -80,10 +81,27 @@ const SwitchPage = () => {
     };
 
     const handleDistributionClick = (details: string) => {
-        setModalContent(details);
         setModalTitle("字段值分布情况");
         setIsModalVisible(true);
     };
+
+    const handleValuePush = () => {
+        const fieldId = selectedField?.id ?? '';
+        const value = selectedField?.id ?? '';
+        const machines = selectedField?.id ?? '';
+        updateFieldValue({
+            fieldId,
+            value,
+            machines
+        }).then((res: any) => {
+                if (res.success === true) {
+                    message.success("推送成功");
+                } else {
+                    message.error("推送失败")
+                }
+                setIsModalVisible(false);
+        });
+    }
 
     const handleModalClose = () => {
         form.resetFields(); // 重置表单字段
@@ -123,14 +141,6 @@ const SwitchPage = () => {
         },
     ];
 
-    function onReset() {
-
-    }
-
-    function onFill() {
-
-    }
-
     function onFinish() {
 
     }
@@ -138,9 +148,9 @@ const SwitchPage = () => {
     return (
         <div>
             <Tabs
-                activeKey={activeTab}
+                activeKey={selectedNamespace?.id}
                 onChange={handleTabChange}
-                items={tabList.map((namespace) => ({
+                items={namespaceList.map((namespace) => ({
                     key: namespace.id,
                     label: namespace.name,
                 }))}
@@ -167,30 +177,33 @@ const SwitchPage = () => {
             <Modal
                 title={modalTitle}
                 open={isModalVisible}
-
                 onOk={handleModalClose}
                 onCancel={handleModalClose}
                 footer={[
-                    <Button key="back" onClick={handleModalClose}>
-                        关闭
-                    </Button>,
+                    <Space>
+                        <Button key="back" onClick={handleValuePush}>
+                            推送
+                        </Button>
+                        <Button key="back" onClick={handleModalClose}>
+                            关闭
+                        </Button>
+                    </Space>
                 ]}
             >
                 <Form
                     form={form}
                     name="control-hooks"
                     onFinish={onFinish}
-                    style={{ maxWidth: 600 }}
+                    style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
                 >
-                    <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
-                        <Select
-                            mode="multiple"
-                            placeholder="Select a option and change input text above"
-                            allowClear
-                            options={machineList}
-                            notFoundContent={"暂无机器"}
-                        >
-                        </Select>
+                    <Form.Item name="fieldName" label="变量名">
+                        {selectedField?.name}
+                    </Form.Item>
+                    <Form.Item name="namespace" label="命名空间">
+                        {selectedNamespace?.name}
+                    </Form.Item>
+                    <Form.Item name="fieldDescription" label="变量描述">
+                        {selectedField?.description}
                     </Form.Item>
                     <Form.Item
                         noStyle
@@ -204,22 +217,33 @@ const SwitchPage = () => {
                             ) : null
                         }
                     </Form.Item>
-                    <Form.Item name="note" label="Note" rules={[{ required: true }]}>
-                        <Input />
+                    <Form.Item name="fieldValue" label="变量值">
+                        <Input.TextArea rows={4} />
                     </Form.Item>
-
-                    <Form.Item>
-                        <Space>
-                            <Button type="primary" htmlType="submit">
-                                Submit
-                            </Button>
-                            <Button htmlType="button" onClick={onReset}>
-                                Reset
-                            </Button>
-                            <Button type="link" htmlType="button" onClick={onFill}>
-                                Fill form
-                            </Button>
-                        </Space>
+                    <Form.Item name="pushType" label="推送方式">
+                        <Radio.Group defaultValue={"all"} value={selectedPushType} onChange={(e) => setSelectedPushType(e.target.value)}>
+                            <Radio value={"all"}>所有机器</Radio>
+                            <Radio value={"specific"}>指定机器</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                    <Form.Item
+                        noStyle
+                        shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}
+                    >
+                        {({ getFieldValue }) => {
+                            return getFieldValue('pushType') === 'specific' ? (
+                                <Form.Item name="selectedMachines" label="推送机器">
+                                    <Select
+                                        mode="multiple"
+                                        placeholder="Select a option and change input text above"
+                                        allowClear
+                                        options={machineList}
+                                        notFoundContent={"暂无机器"}
+                                    >
+                                    </Select>
+                                </Form.Item>
+                            ) : null
+                        }}
                     </Form.Item>
                 </Form>
             </Modal>

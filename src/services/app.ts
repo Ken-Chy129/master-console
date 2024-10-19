@@ -33,6 +33,17 @@ export async function getFieldValue(fieldId: string) {
     })
 }
 
+export async function updateFieldValue(body: {
+    "fieldId": string,
+    "value": string,
+    "machines": string
+}) {
+    return request('/api/field/push', {
+        method: 'POST',
+        data: body
+    })
+}
+
 export async function getCategoryList() {
     return request('/api/master/categories', {
         method: 'GET'
