@@ -14,14 +14,14 @@ const SwitchPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedNamespace, setSelectedNamespace] = useState<Namespace>();
-    const [isPushModalVisible, setIsPushModalVisible] = useState(false);
     const [showModalIndex, setShowModalIndex] = useState(0)
     const [modalTitle, setModalTitle] = useState<string>('');
 
     const [machineList, setMachineList] = useState<Machine[]>([]);
     const [selectedField, setSelectedField] = useState<Field>();
     const [selectedPushType, setSelectedPushType] = useState<string>();
-    const [fieldValue, setFieldValue] = useState<FieldValue>()
+    const [fieldValue, setFieldValue] = useState<FieldValue>();
+    const [machineValue, setMachineValue] = useState<FiledMachineValue[]>([]);
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -89,7 +89,19 @@ const SwitchPage = () => {
                 if (res.success === true) {
                     console.log(res.data)
                     setFieldValue(res.data);
-                    res.data.machineValueMap.fo
+                    const machineValueList: FiledMachineValue[] = [];
+                    const machineValueMap:  {[key: string]: string} = res.data.machineValueMap;
+                    Object.entries(machineValueMap).forEach(([key, value]: [string, string]) => {
+                        const [ipAddress, port] = key.split(':');
+                        if (ipAddress && port) {
+                            machineValueList.push({
+                                ipAddress,
+                                port,
+                                value
+                            });
+                        }
+                    });
+                    setMachineValue(machineValueList);
                 }
                 setShowModalIndex(2);
             });
@@ -150,6 +162,24 @@ const SwitchPage = () => {
             width: '25%', // 设置列宽为30%
         },
     ];
+
+    const machineFieldValueColumns = [
+        {
+            title: 'ip地址',
+            dataIndex: 'ipAddress',
+            key: 'ipAddress'
+        },
+        {
+            title: '端口号',
+            dataIndex: 'port',
+            key: 'port'
+        },
+        {
+            title: '字段值',
+            dataIndex: 'value',
+            key: 'value'
+        },
+    ]
 
     function onFinish() {
 
@@ -291,9 +321,7 @@ const SwitchPage = () => {
                         {fieldValue?.description}
                     </Form.Item>
                     <Form.Item name="fieldValue" label="变量值">
-                        <Table>
-
-                        </Table>
+                        <Table dataSource={machineValue} columns={machineFieldValueColumns}/>
                     </Form.Item>
                 </Form>
             </Modal>

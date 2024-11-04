@@ -31,5 +31,11 @@ type FieldValue = {
     className: string;
     description?: string;
     name: string;
-    machineValueMap: object
+    machineValueMap: {[key: string]: string};
 };
+
+type FiledMachineValue = {
+    ipAddress: string;
+    port: string;
+    value: string;
+}
