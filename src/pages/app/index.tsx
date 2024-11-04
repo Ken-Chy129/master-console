@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {getFieldListByNamespaceId, getNamespaceList, updateFieldValue} from "@/services/app";
+import {getFieldListByNamespaceId, getFieldValue, getNamespaceList, updateFieldValue} from "@/services/app";
 import {Tabs, List, Spin, Table, Button, Modal, Layout, Menu, Form, Input, Select, Space, Radio, message} from "antd";
 const { Option } = Select;
 import {history} from "@umijs/max";
@@ -14,12 +14,14 @@ const SwitchPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedNamespace, setSelectedNamespace] = useState<Namespace>();
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isPushModalVisible, setIsPushModalVisible] = useState(false);
+    const [showModalIndex, setShowModalIndex] = useState(0)
     const [modalTitle, setModalTitle] = useState<string>('');
 
     const [machineList, setMachineList] = useState<Machine[]>([]);
     const [selectedField, setSelectedField] = useState<Field>();
     const [selectedPushType, setSelectedPushType] = useState<string>();
+    const [fieldValue, setFieldValue] = useState<FieldValue>()
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -76,13 +78,21 @@ const SwitchPage = () => {
                     res.data.forEach((machine: any) => {machine.label = machine.ipAddress; machine.value = machine.ipAddress})
                     setMachineList(res.data);
                 }
-                setIsModalVisible(true);
+                setShowModalIndex(1);
             });
     };
 
-    const handleDistributionClick = (details: string) => {
+    const handleDistributionClick = (fieldId: string) => {
         setModalTitle("字段值分布情况");
-        setIsModalVisible(true);
+        getFieldValue(fieldId)
+            .then((res: any) => {
+                if (res.success === true) {
+                    console.log(res.data)
+                    setFieldValue(res.data);
+                    res.data.machineValueMap.fo
+                }
+                setShowModalIndex(2);
+            });
     };
 
     const handleValuePush = () => {
@@ -99,13 +109,13 @@ const SwitchPage = () => {
                 } else {
                     message.error("推送失败")
                 }
-                setIsModalVisible(false);
+                setShowModalIndex(0);
         });
     }
 
     const handleModalClose = () => {
         form.resetFields(); // 重置表单字段
-        setIsModalVisible(false);
+        setShowModalIndex(0);
     };
 
     const columns = [
@@ -176,7 +186,7 @@ const SwitchPage = () => {
 
             <Modal
                 title={modalTitle}
-                open={isModalVisible}
+                open={showModalIndex == 1}
                 onOk={handleModalClose}
                 onCancel={handleModalClose}
                 footer={[
@@ -192,7 +202,6 @@ const SwitchPage = () => {
             >
                 <Form
                     form={form}
-                    name="control-hooks"
                     onFinish={onFinish}
                     style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
                 >
@@ -244,6 +253,47 @@ const SwitchPage = () => {
                                 </Form.Item>
                             ) : null
                         }}
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            <Modal
+                title={modalTitle}
+                open={showModalIndex == 2}
+                onOk={handleModalClose}
+                onCancel={handleModalClose}
+                footer={[
+                    <Space>
+                        <Button key="back" onClick={handleValuePush}>
+                            推送
+                        </Button>
+                        <Button key="back" onClick={handleModalClose}>
+                            关闭
+                        </Button>
+                    </Space>
+                ]}
+            >
+                <Form
+                    form={form}
+                    onFinish={onFinish}
+                    style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
+                >
+                    <Form.Item name="className" label="全类名">
+                        {fieldValue?.className}
+                    </Form.Item>
+                    <Form.Item name="namespace" label="命名空间">
+                        {fieldValue?.namespace}
+                    </Form.Item>
+                    <Form.Item name="fieldName" label="变量名">
+                        {fieldValue?.name}
+                    </Form.Item>
+                    <Form.Item name="description" label="变量描述">
+                        {fieldValue?.description}
+                    </Form.Item>
+                    <Form.Item name="fieldValue" label="变量值">
+                        <Table>
+
+                        </Table>
                     </Form.Item>
                 </Form>
             </Modal>

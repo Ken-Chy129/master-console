@@ -13,8 +13,11 @@ export async function getNamespaceList(appId: string) {
 }
 
 export async function getFieldListByNamespaceId(namespaceId: string) {
-    return request('/api/field/' + namespaceId, {
-        method: 'GET'
+    return request('/api/field/queryByNamespace', {
+        method: 'GET',
+        params: {
+            namespaceId
+        }
     })
 }
 

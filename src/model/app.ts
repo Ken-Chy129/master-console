@@ -25,3 +25,11 @@ type Field = {
     name: string;
     description?: string;
 };
+
+type FieldValue = {
+    namespace: string;
+    className: string;
+    description?: string;
+    name: string;
+    machineValueMap: object
+};
