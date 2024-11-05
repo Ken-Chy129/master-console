@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {getFieldListByNamespaceId, getFieldValue, getNamespaceList, updateFieldValue} from "@/services/app";
-import {Tabs, List, Spin, Table, Button, Modal, Layout, Menu, Form, Input, Select, Space, Radio, message} from "antd";
-const { Option } = Select;
+import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message} from "antd";
 import {history} from "@umijs/max";
 import {getMachineList} from "@/services/common";
 
@@ -78,7 +77,6 @@ const SwitchPage = () => {
             .then((res: any) => {
                 if (res.success === true) {
                     res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port})
-                    res.data.unshift({label:'所有机器', value:'all'})
                     setMachineList(res.data);
                 }
                 setShowModalIndex(1);
@@ -119,24 +117,25 @@ const SwitchPage = () => {
         const value = newValue ?? '';
         const pushType = selectedPushType;
         const machineIds= selectedMachineIds.join(',');
-        console.log(selectedPushType)
+        console.log(fieldId,value,pushType,machineIds)
         updateFieldValue({
             fieldId,
             value,
             pushType,
             machineIds
         }).then((res: any) => {
-                if (res.success === true) {
-                    message.success("推送成功");
-                } else {
-                    message.error("推送失败")
-                }
-                setShowModalIndex(0);
+            if (res.success === true) {
+                message.success("推送成功");
+            } else {
+                message.error("推送失败")
+            }
+            handleModalClose();
         });
     }
 
     const handleModalClose = () => {
         form.resetFields(); // 重置表单字段
+        setNewValue('')
         setShowModalIndex(0);
     };
 
@@ -199,7 +198,7 @@ const SwitchPage = () => {
     const handleMachineChange = (_:any, chooseMachines:any) => {
         const ids: string[] = [];
         chooseMachines.forEach((machine: any) => ids.push(machine.id))
-        console.log(ids)
+        setSelectedMachineIds(ids)
     };
 
 
