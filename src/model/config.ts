@@ -11,6 +11,7 @@ type Category = {
 type Machine = {
     id: string;
     ipAddress: string;
+    port: string;
 };
 
 type MenuDataItem = {

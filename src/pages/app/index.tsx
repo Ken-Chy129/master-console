@@ -18,10 +18,12 @@ const SwitchPage = () => {
     const [modalTitle, setModalTitle] = useState<string>('');
 
     const [machineList, setMachineList] = useState<Machine[]>([]);
+    const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>([])
+    const [newValue, setNewValue] = useState<string>("")
     const [selectedField, setSelectedField] = useState<Field>();
-    const [selectedPushType, setSelectedPushType] = useState<string>();
+    const [selectedPushType, setSelectedPushType] = useState<string>("all");
     const [fieldValue, setFieldValue] = useState<FieldValue>();
-    const [machineValue, setMachineValue] = useState<FiledMachineValue[]>([]);
+    const [machineFieldValue, setMachineFieldValue] = useState<MachineFieldValue[]>([]);
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -75,7 +77,8 @@ const SwitchPage = () => {
         getMachineList({appId})
             .then((res: any) => {
                 if (res.success === true) {
-                    res.data.forEach((machine: any) => {machine.label = machine.ipAddress; machine.value = machine.ipAddress})
+                    res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port})
+                    res.data.unshift({label:'所有机器', value:'all'})
                     setMachineList(res.data);
                 }
                 setShowModalIndex(1);
@@ -89,7 +92,7 @@ const SwitchPage = () => {
                 if (res.success === true) {
                     console.log(res.data)
                     setFieldValue(res.data);
-                    const machineValueList: FiledMachineValue[] = [];
+                    const machineValueList: MachineFieldValue[] = [];
                     const machineValueMap:  {[key: string]: string} = res.data.machineValueMap;
                     Object.entries(machineValueMap).forEach(([key, value]: [string, string]) => {
                         const [ipAddress, port] = key.split(':');
@@ -101,20 +104,27 @@ const SwitchPage = () => {
                             });
                         }
                     });
-                    setMachineValue(machineValueList);
+                    setMachineFieldValue(machineValueList);
                 }
                 setShowModalIndex(2);
             });
     };
 
     const handleValuePush = () => {
-        const fieldId = selectedField?.id ?? '';
-        const value = selectedField?.id ?? '';
-        const machines = selectedField?.id ?? '';
+        if (selectedField?.id === null || selectedField?.id === undefined || selectedField?.id === '') {
+            message.error("fieldId为空")
+            return;
+        }
+        const fieldId = selectedField.id
+        const value = newValue ?? '';
+        const pushType = selectedPushType;
+        const machineIds= selectedMachineIds.join(',');
+        console.log(selectedPushType)
         updateFieldValue({
             fieldId,
             value,
-            machines
+            pushType,
+            machineIds
         }).then((res: any) => {
                 if (res.success === true) {
                     message.success("推送成功");
@@ -184,6 +194,14 @@ const SwitchPage = () => {
     function onFinish() {
 
     }
+
+
+    const handleMachineChange = (_:any, chooseMachines:any) => {
+        const ids: string[] = [];
+        chooseMachines.forEach((machine: any) => ids.push(machine.id))
+        console.log(ids)
+    };
+
 
     return (
         <div>
@@ -257,7 +275,7 @@ const SwitchPage = () => {
                         }
                     </Form.Item>
                     <Form.Item name="fieldValue" label="变量值">
-                        <Input.TextArea rows={4} />
+                        <Input.TextArea value={newValue} onChange={(e) => setNewValue(e.target.value)} rows={4} />
                     </Form.Item>
                     <Form.Item name="pushType" label="推送方式">
                         <Radio.Group defaultValue={"all"} value={selectedPushType} onChange={(e) => setSelectedPushType(e.target.value)}>
@@ -274,9 +292,10 @@ const SwitchPage = () => {
                                 <Form.Item name="selectedMachines" label="推送机器">
                                     <Select
                                         mode="multiple"
-                                        placeholder="Select a option and change input text above"
+                                        placeholder="请选择要变更字段值的机器"
                                         allowClear
                                         options={machineList}
+                                        onChange={handleMachineChange}
                                         notFoundContent={"暂无机器"}
                                     >
                                     </Select>
@@ -321,7 +340,7 @@ const SwitchPage = () => {
                         {fieldValue?.description}
                     </Form.Item>
                     <Form.Item name="fieldValue" label="变量值">
-                        <Table dataSource={machineValue} columns={machineFieldValueColumns}/>
+                        <Table dataSource={machineFieldValue} columns={machineFieldValueColumns}/>
                     </Form.Item>
                 </Form>
             </Modal>

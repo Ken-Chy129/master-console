@@ -39,7 +39,8 @@ export async function getFieldValue(fieldId: string) {
 export async function updateFieldValue(body: {
     "fieldId": string,
     "value": string,
-    "machines": string
+    "pushType": string,
+    "machineIds": string
 }) {
     return request('/api/field/push', {
         method: 'POST',

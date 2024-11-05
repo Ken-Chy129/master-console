@@ -34,7 +34,7 @@ type FieldValue = {
     machineValueMap: {[key: string]: string};
 };
 
-type FiledMachineValue = {
+type MachineFieldValue = {
     ipAddress: string;
     port: string;
     value: string;
