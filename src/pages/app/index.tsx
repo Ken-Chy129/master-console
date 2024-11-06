@@ -113,8 +113,12 @@ const SwitchPage = () => {
             message.error("fieldId为空")
             return;
         }
-        const fieldId = selectedField.id
-        const namespace = selectedNamespace?.name ?? ""
+        if (selectedNamespace?.name === null || selectedNamespace?.name === undefined || selectedNamespace?.name === '') {
+            message.error("namespace为空")
+            return;
+        }
+        const fieldId = selectedField.id;
+        const namespace = selectedNamespace.name
         const value = newValue ?? '';
         const pushType = selectedPushType;
         const machineIds= selectedMachineIds.join(',');
@@ -126,6 +130,7 @@ const SwitchPage = () => {
             pushType,
             machineIds
         }).then((res: any) => {
+            console.log(res)
             if (res.success === true) {
                 message.success("推送成功");
             } else {
