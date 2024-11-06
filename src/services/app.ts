@@ -38,6 +38,7 @@ export async function getFieldValue(fieldId: string) {
 
 export async function updateFieldValue(body: {
     "fieldId": string,
+    "namespace": string,
     "value": string,
     "pushType": string,
     "machineIds": string

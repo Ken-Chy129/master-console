@@ -114,12 +114,14 @@ const SwitchPage = () => {
             return;
         }
         const fieldId = selectedField.id
+        const namespace = selectedNamespace?.name ?? ""
         const value = newValue ?? '';
         const pushType = selectedPushType;
         const machineIds= selectedMachineIds.join(',');
         console.log(fieldId,value,pushType,machineIds)
         updateFieldValue({
             fieldId,
+            namespace,
             value,
             pushType,
             machineIds

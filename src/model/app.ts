@@ -14,6 +14,7 @@ type Namespace = {
     appId: string;
     name: string;
     description?: string;
+    className: string;
 }
 
 type Field = {
