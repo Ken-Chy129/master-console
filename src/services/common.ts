@@ -47,7 +47,7 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
 }
 
 export async function getMachineList(params: {
-    appId: string
+    appId: number
 }, options?: { [key: string]: any }) {
     return request<API.LoginResult>('/api/master/machines', {
         method: 'GET',

@@ -118,11 +118,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
           "children": [
             {
               "name": "查看列表",
-              "path": "management/1"
+              "path": "management"
             },
             {
               "name": "场景模板",
-              "path": ""
+              "path": "management/template"
             },
             {
               "name": "查看日志",

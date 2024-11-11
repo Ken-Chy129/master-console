@@ -46,12 +46,21 @@ export default [
     component: "machine"
   },
   {
-    path: '/management/:appId',
-    component: "management",
+    path: '/management',
     routes: [
       {
+        name: 'management',
+        path: '/management',
+        component: "management"
+      },
+      {
+        name: 'template',
+        path: '/management/template',
+        component: "management/template"
+      },
+      {
         name: 'log',
-        path: 'management/log',
+        path: '/management/log',
         component: "management/log"
       }
     ]

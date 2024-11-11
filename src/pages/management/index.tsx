@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {getFieldListByNamespaceId, getFieldValue, getNamespaceList, updateFieldValue} from "@/services/app";
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message} from "antd";
-import {history} from "@umijs/max";
+import {history, useModel} from "@umijs/max";
 import {getMachineList} from "@/services/common";
 
 const ManagementPage = () => {
-    const basePath = '/management/'
-    const { location } = history;
-    const appId = location.pathname.replace(basePath, "");
+    const { appId } = useModel("model");
     const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
     const [fieldList, setFieldList] = useState<Field[]>([]);
     const [loading, setLoading] = useState(true);
@@ -28,6 +26,10 @@ const ManagementPage = () => {
     useEffect(() => {
         setLoading(true);
         setError(null);
+        if (appId === null || appId === undefined) {
+            message.error("appId为空");
+            return;
+        }
         getNamespaceList(appId)
             .then((res: any) => {
                 if (res.success === true) {
@@ -73,6 +75,10 @@ const ManagementPage = () => {
     const handlePushClick = (fieldId: string) => {
         setSelectedField(fieldList.find(value => value.id === fieldId));
         setModalTitle("字段值推送");
+        if (appId === null || appId === undefined) {
+            message.error("appId为空");
+            return;
+        }
         getMachineList({appId})
             .then((res: any) => {
                 if (res.success === true) {
