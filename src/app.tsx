@@ -110,8 +110,22 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
           "path": "home",
         },
         {
-          "name": "应用机器",
-          "path": "machine",
+          "name": "应用运维",
+          "path": "app",
+          "children": [
+            {
+              "name": "机器列表",
+              "path": "app/machine"
+            },
+            {
+              "name": "应用状态",
+              "path": "app/status"
+            },
+            {
+              "name": "应用配置",
+              "path": "app/setting"
+            },
+          ]
         },
         {
           "name": "变量管控",
@@ -131,8 +145,38 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
           ]
         },
         {
-          "name": "测试",
-          "path": "app/2"
+          "name": "任务调度",
+          "path": "task"
+        },
+        {
+          "name": "流量控制",
+          "path": "flow"
+        },
+        {
+          "name": "告警",
+          "path": "alarm"
+        },
+        {
+          "name": "监控",
+          "path": "monitor"
+        },
+        {
+          "name": "日志",
+          "path": "log"
+        },
+        {
+          "name": "权限控制",
+          "path": "permission",
+          "children": [
+            {
+              "name": "用户",
+              "path": "permission/user"
+            },
+            {
+              "name": "审批记录",
+              "path": "permission/approval"
+            },
+          ]
         },
       ]
       return data;

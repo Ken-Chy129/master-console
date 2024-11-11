@@ -30,7 +30,7 @@ export default [
   {
     path: '/',
     layout: false,
-    component: "app"
+    component: "index"
   },
   {
     path: "/home",

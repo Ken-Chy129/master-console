@@ -2,7 +2,7 @@
 
 const MachinePage = () => {
     return <>
-        hello
+        hello，应用上下线
     </>
 }
 
