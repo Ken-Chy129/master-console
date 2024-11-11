@@ -106,20 +106,27 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     postMenuData: () => {
       const data = [
         {
-          "name": "Switch",
-          "path": 'app/1',
+          "name": "首页",
+          "path": "home",
+        },
+        {
+          "name": "应用机器",
+          "path": "machine",
+        },
+        {
+          "name": "变量管控",
           "children": [
             {
               "name": "查看列表",
-              "path": "app/2"
+              "path": "management/1"
             },
             {
-              "name": "查看机器",
+              "name": "场景模板",
               "path": ""
             },
             {
               "name": "查看日志",
-              "path": ""
+              "path": "management/log"
             },
           ]
         },

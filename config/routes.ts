@@ -22,18 +22,38 @@ export default [
       },
     ],
   },
+  // {
+  //   path: '/',
+  //   layout: false,
+  //   component: 'index'
+  // },
   {
     path: '/',
     layout: false,
-    component: 'index'
+    component: "app"
   },
   {
-    path: "/app/:appId",
-    component: "app"
+    path: "/home",
+    component: "home"
   },
   {
     path: '*',
     layout: false,
     component: './404',
   },
+  {
+    path: '/machine',
+    component: "machine"
+  },
+  {
+    path: '/management/:appId',
+    component: "management",
+    routes: [
+      {
+        name: 'log',
+        path: 'management/log',
+        component: "management/log"
+      }
+    ]
+  }
 ];
