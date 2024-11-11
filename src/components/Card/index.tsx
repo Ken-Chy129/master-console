@@ -1,5 +1,6 @@
 import { theme } from 'antd';
 import {history} from "@@/core/history";
+import {useModel} from "@umijs/max";
 
 /**
  * 每个单独的卡片，为了复用样式抽成了组件
@@ -13,8 +14,13 @@ const InfoCard: React.FC<{
     path: string;
 }> = ({ title, path, index, desc }) => {
     const { useToken } = theme;
-
+    const { setAppId } = useModel("model")
     const { token } = useToken();
+
+    const click = () => {
+        setAppId(index);
+        history.push(path);
+    }
 
     return (
         <div
@@ -74,10 +80,10 @@ const InfoCard: React.FC<{
             >
                 {desc}
             </div>
-            <a onClick={() => history.push(path)} target="_blank" rel="noreferrer">
+            <a onClick={click} target="_blank" rel="noreferrer">
                 查看详情 {'>'}
             </a>
-            <a onClick={() => history.push(path)} target="_blank" rel="noreferrer">
+            <a onClick={click} target="_blank" rel="noreferrer">
                 查看机器 {'>'}
             </a>
         </div>
