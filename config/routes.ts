@@ -42,6 +42,7 @@ export default [
     component: './404',
   },
   {
+    name: "机器",
     path: '/machine',
     component: "machine"
   },
@@ -49,17 +50,17 @@ export default [
     path: '/management',
     routes: [
       {
-        name: 'management',
+        name: '变量管控',
         path: '/management',
         component: "management"
       },
       {
-        name: 'template',
+        name: '变量管控-场景模板',
         path: '/management/template',
         component: "management/template"
       },
       {
-        name: 'log',
+        name: '变量管控-日志',
         path: '/management/log',
         component: "management/log"
       }
