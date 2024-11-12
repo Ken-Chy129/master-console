@@ -8,6 +8,11 @@ import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import { currentUser as queryCurrentUser } from '@/services/common';
 import React from 'react';
+import ReactDOM from 'react-dom';
+import zhMessages from './locales/zh-CN.json';
+import { IntlProvider } from 'react-intl';
+import {App} from "antd";
+
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
@@ -214,3 +219,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 export const request = {
   ...errorConfig,
 };
+
+const messages = {
+  'zh-CN': zhMessages
+};
+const language = navigator.language;
+ReactDOM.render(
+    <IntlProvider locale={language} messages={messages[language]}>
+      <App/>
+    </IntlProvider>,
+    document.getElementById('root')
+);
