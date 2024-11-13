@@ -60,7 +60,7 @@ export default [
         component: "management/template"
       },
       {
-        name: '变量管控-日志',
+        name: '变更日志',
         path: '/management/log',
         component: "management/log"
       }
