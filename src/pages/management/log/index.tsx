@@ -62,12 +62,17 @@ const ManagementLogPage = () => {
         },
     ];
 
+    const {appId} = useModel("model");
+    const [messageApi, contextHolder] = message.useMessage();
+
     const [managementLog, setManagementLog] = useState<[]>([]);
     const [namespaceList, setNamespaceList] = useState<[]>([]);
     const [machineList, setMachineList] = useState<[]>([]);
     const [fieldList, setFieldList] = useState<[]>([]);
     const [form] = Form.useForm();
-    const {appId} = useModel("model");
+    const [pageIndex, setPageIndex] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [total, setTotal] = useState(0);
 
     useEffect(() => {
         queryManagementLog();
@@ -75,12 +80,17 @@ const ManagementLogPage = () => {
         queryMachineList();
     }, []);
 
+    useEffect(() => {
+        queryManagementLog();
+    }, [pageIndex, pageSize]);
+
     const clear = () => {
         form.resetFields();
     }
 
     const queryNamespace = () => {
         if (appId === null || appId === undefined) {
+            // message.error("appId不能为空");
             return;
         }
         getNamespaceList(appId)
@@ -97,12 +107,11 @@ const ManagementLogPage = () => {
         const name = form.getFieldValue("name");
         const machines = form.getFieldValue("machines");
         const modifier = form.getFieldValue("modifier");
-        console.log(namespace, name, machines, modifier);
-        getManagementLog({appId, namespace, name, machines, modifier}).then((res: any) => {
+        getManagementLog({appId, namespace, name, machines, modifier, pageIndex, pageSize}).then((res: any) => {
             if (res.success === true) {
-                setManagementLog(res.data)
-            } else {
-                message.error("查询失败");
+                console.log(res);
+                setTotal(res.total);
+                setManagementLog(res.data);
             }
         });
     }
@@ -131,10 +140,15 @@ const ManagementLogPage = () => {
     }
 
     const handleNamespaceChange = (_:any, selectedNamespace:any) => {
-        queryFieldNameList(selectedNamespace.id)
+        if (selectedNamespace === null || selectedNamespace === undefined) {
+            return;
+        }
+        console.log(selectedNamespace);
+        queryFieldNameList(selectedNamespace?.id);
     };
 
     return <>
+        {contextHolder}
         <Form
             form={form}
             // style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
@@ -194,9 +208,19 @@ const ManagementLogPage = () => {
         <Table
             columns={columns}
             dataSource={managementLog}
+            pagination={{
+                current: pageIndex,
+                pageSize: pageSize,
+                total: total,
+                showSizeChanger: true,
+                onChange: (current, pageSize) => {
+                    setPageIndex(current);
+                    setPageSize(pageSize);
+                    console.log(current, pageSize);
+                }
+            }}
             rowKey="name"
         />
-        <Pagination></Pagination>
     </>
 }
 

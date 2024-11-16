@@ -158,6 +158,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
           "path": "flow"
         },
         {
+          "name": "动态线程池",
+          "path": "dynamicPool"
+        },
+        {
           "name": "告警",
           "path": "alarm"
         },

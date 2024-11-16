@@ -3,9 +3,12 @@ import {getFieldListByNamespaceId, getFieldValue, getNamespaceList, updateFieldV
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message} from "antd";
 import {history, useModel} from "@umijs/max";
 import {getMachineList} from "@/services/common";
+import {showErrorTips} from "@/util/common"
 
 const ManagementPage = () => {
     const { appId } = useModel("model");
+    const [messageApi, contextHolder] = message.useMessage();
+
     const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
     const [fieldList, setFieldList] = useState<Field[]>([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +30,7 @@ const ManagementPage = () => {
         setLoading(true);
         setError(null);
         if (appId === null || appId === undefined) {
-            message.error("appId为空");
+            showErrorTips(messageApi, "appId不能为空")
             return;
         }
         getNamespaceList(appId)
@@ -217,6 +220,7 @@ const ManagementPage = () => {
 
     return (
         <div>
+            {contextHolder}
             <Tabs
                 activeKey={selectedNamespace?.id}
                 onChange={handleTabChange}
