@@ -11,7 +11,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import zhMessages from './locales/zh-CN.json';
 import { IntlProvider } from 'react-intl';
-import {App} from "antd";
+import {App, message, notification} from "antd";
+import {useModel} from "@@/exports";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -54,6 +55,8 @@ export async function getInitialState(): Promise<{
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
+  const {appId, setAppId} = useModel("model");
+
   return {
     title: "Master",
 
@@ -74,6 +77,15 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
+      }
+      console.log(location)
+      console.log(appId)
+      // 如果不是登录页页不是应用列表页，则检查是否有appId，如果没有则重定向到应用列表页
+      if (location.pathname !== loginPath && location.pathname !== '/' && (appId === null || appId === undefined)) {
+        // 临时逻辑，避免每次刷新都需要重新进入，后续移除
+        // setAppId(1);
+        message.error("当前没有选择对应的应用，已为你跳转至应用列表页")
+        history.push('/')
       }
     },
     bgLayoutImgList: [

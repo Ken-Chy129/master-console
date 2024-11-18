@@ -1,6 +1,7 @@
 import { theme } from 'antd';
 import {history} from "@@/core/history";
 import {useModel} from "@umijs/max";
+import {useEffect} from "react";
 
 /**
  * 每个单独的卡片，为了复用样式抽成了组件
@@ -14,13 +15,19 @@ const InfoCard: React.FC<{
     path: string;
 }> = ({ title, path, index, desc }) => {
     const { useToken } = theme;
-    const { setAppId } = useModel("model")
+    const { appId, setAppId } = useModel("model")
     const { token } = useToken();
 
     const click = () => {
         setAppId(index);
-        history.push(path);
     }
+
+    // 完成更新之后在跳转，避免路由守卫在跳转页面校验appId时setAppId钩子函数还未执行完
+    useEffect(() => {
+        if (appId !== null && appId != undefined) {
+            history.push(path);
+        }
+    }, [appId]);
 
     return (
         <div
