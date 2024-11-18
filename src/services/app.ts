@@ -6,7 +6,7 @@ export async function getAppList() {
     })
 }
 
-export async function getNamespaceList(appId: number) {
+export async function getNamespaceList(appId: string) {
     return request('/api/namespace/' + appId, {
         method: 'GET'
     })

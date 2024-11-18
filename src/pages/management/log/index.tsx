@@ -62,7 +62,7 @@ const ManagementLogPage = () => {
         },
     ];
 
-    const {appId} = useModel("model");
+    const appId = localStorage.getItem('appId')!;
     const [messageApi, contextHolder] = message.useMessage();
 
     const [managementLog, setManagementLog] = useState<[]>([]);
@@ -89,10 +89,6 @@ const ManagementLogPage = () => {
     }
 
     const queryNamespace = () => {
-        if (appId === null || appId === undefined) {
-            // message.error("appId不能为空");
-            return;
-        }
         getNamespaceList(appId)
             .then((res: any) => {
                 if (res.success === true) {

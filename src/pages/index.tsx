@@ -49,7 +49,7 @@ export default function AppPage() {
                     {appList.map((app, index) => (
                         <Col span={8} key={app.id}>
                             <InfoCard
-                                index={index + 1}
+                                index={String(index + 1)}
                                 path={'/home'}
                                 title={app.name}
                                 desc={app.description}

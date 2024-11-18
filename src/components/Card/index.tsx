@@ -10,7 +10,7 @@ import {useEffect} from "react";
  */
 const InfoCard: React.FC<{
     title: string;
-    index: number;
+    index: string;
     desc?: string;
     path: string;
 }> = ({ title, path, index, desc }) => {
@@ -19,15 +19,19 @@ const InfoCard: React.FC<{
     const { token } = useToken();
 
     const click = () => {
-        setAppId(index);
+        // setAppId(index);
+        localStorage.setItem('appId', index)
+        history.push(path);
     }
 
     // 完成更新之后在跳转，避免路由守卫在跳转页面校验appId时setAppId钩子函数还未执行完
-    useEffect(() => {
-        if (appId !== null && appId != undefined) {
-            history.push(path);
-        }
-    }, [appId]);
+    // useEffect(() => {
+    //     const storedAppId = localStorage.getItem('appId');
+    //     // if ()
+    //     if (appId !== null && appId != undefined) {
+    //         history.push(path);
+    //     }
+    // }, [appId]);
 
     return (
         <div

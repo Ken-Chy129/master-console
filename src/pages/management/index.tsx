@@ -6,7 +6,7 @@ import {getMachineList} from "@/services/common";
 import {showErrorTips} from "@/util/common"
 
 const ManagementPage = () => {
-    const { appId } = useModel("model");
+    const appId = localStorage.getItem('appId')!
     const [messageApi, contextHolder] = message.useMessage();
 
     const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
@@ -29,10 +29,6 @@ const ManagementPage = () => {
     useEffect(() => {
         setLoading(true);
         setError(null);
-        if (appId === null || appId === undefined) {
-            showErrorTips(messageApi, "appId不能为空")
-            return;
-        }
         getNamespaceList(appId)
             .then((res: any) => {
                 if (res.success === true) {
@@ -78,10 +74,6 @@ const ManagementPage = () => {
     const handlePushClick = (fieldId: string) => {
         setSelectedField(fieldList.find(value => value.id === fieldId));
         setModalTitle("字段值推送");
-        if (appId === null || appId === undefined) {
-            message.error("appId为空");
-            return;
-        }
         getMachineList({appId})
             .then((res: any) => {
                 if (res.success === true) {
