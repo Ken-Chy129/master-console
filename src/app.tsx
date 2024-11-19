@@ -85,7 +85,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       if (location.pathname !== loginPath && location.pathname !== '/' && (appId === null || appId === undefined)) {
         // 临时逻辑，避免每次刷新都需要重新进入，后续移除
         // setAppId(1);
-        message.error("当前没有选择对应的应用，已为你跳转至应用列表页")
+        message.error("当前没有选择对应的应用，已为你跳转至应用列表页").then(() => {})
         history.push('/')
       }
     },

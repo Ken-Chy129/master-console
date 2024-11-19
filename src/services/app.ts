@@ -54,3 +54,10 @@ export async function getCategoryList() {
         method: 'GET'
     })
 }
+
+export async function getManagementField(params: {}) {
+    return request('/api/management/field/selectByCondition', {
+        method: 'GET',
+        params
+    })
+}

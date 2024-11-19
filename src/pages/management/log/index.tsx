@@ -139,7 +139,6 @@ const ManagementLogPage = () => {
         if (selectedNamespace === null || selectedNamespace === undefined) {
             return;
         }
-        console.log(selectedNamespace);
         queryFieldNameList(selectedNamespace?.id);
     };
 

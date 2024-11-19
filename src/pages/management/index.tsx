@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {getFieldListByNamespaceId, getFieldValue, getNamespaceList, updateFieldValue} from "@/services/app";
-import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message} from "antd";
+import {
+    getFieldListByNamespaceId,
+    getFieldValue,
+    getManagementField,
+    getNamespaceList,
+    updateFieldValue
+} from "@/services/app";
+import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {history, useModel} from "@umijs/max";
 import {getMachineList} from "@/services/common";
 import {showErrorTips} from "@/util/common"
 
 const ManagementPage = () => {
     const appId = localStorage.getItem('appId')!
-    const [messageApi, contextHolder] = message.useMessage();
 
     const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
     const [fieldList, setFieldList] = useState<Field[]>([]);
@@ -25,34 +30,42 @@ const ManagementPage = () => {
     const [fieldValue, setFieldValue] = useState<FieldValue>();
     const [machineFieldValue, setMachineFieldValue] = useState<MachineFieldValue[]>([]);
     const [form] = Form.useForm();
+    const [pageIndex, setPageIndex] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [total, setTotal] = useState(0);
 
     useEffect(() => {
         setLoading(true);
         setError(null);
-        getNamespaceList(appId)
-            .then((res: any) => {
-                if (res.success === true) {
-                    if (res.data === null || res.data.length === 0) {
-                        setError('当前应用暂时没有命名空间，快去配置吧');
-                        return;
-                    }
-                    setNamespaceList(res.data);
-                    const namespace = res.data[0];
-                    setSelectedNamespace(namespace);
-                    queryFieldList(namespace.id);
-                } else {
-                    setError('获取应用命名空间失败:' + res.message);
-                }
-            })
-            .finally(() => setLoading(false));
+        queryNamespace();
+        queryManagementField();
+        setLoading(false);
     }, []);
 
-    const queryFieldList = (namespaceId: string) => {
+    useEffect(() => {
+        setLoading(true);
+        queryManagementField();
+        setLoading(false);
+    }, [pageIndex, pageSize]);
+
+    const queryNamespace = () => {
+        getNamespaceList(appId).then((res: any) => {
+            if (res.success === true) {
+                res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
+                setNamespaceList(res.data);
+            }
+        });
+    }
+
+    const queryManagementField = () => {
         setLoading(true);
         setError(null);
-        getFieldListByNamespaceId(namespaceId)
+        const namespaceId = form.getFieldValue("namespace");
+        const fieldName = form.getFieldValue("fieldName");
+        getManagementField({appId, namespaceId, fieldName, pageIndex, pageSize})
             .then((res: any) => {
                 if (res.success === true) {
+                    setTotal(res.total)
                     setFieldList(res.data);
                 } else {
                     setError('获取字段列表失败:' + res.message);
@@ -64,11 +77,6 @@ const ManagementPage = () => {
             .finally(() => {
                 setLoading(false);
             });
-    };
-
-    const handleTabChange = (namespaceId: string) => {
-        setSelectedNamespace(namespaceList.find(value => value.id == namespaceId));
-        queryFieldList(namespaceId);
     };
 
     const handlePushClick = (fieldId: string) => {
@@ -149,16 +157,22 @@ const ManagementPage = () => {
 
     const columns = [
         {
+            title: '命名空间',
+            dataIndex: 'namespace',
+            key: 'namespace',
+            width: '20%'
+        },
+        {
             title: '字段名',
             dataIndex: 'name',
             key: 'name',
-            width: '30%', // 设置列宽为30%
+            width: '20%', // 设置列宽为30%
         },
         {
             title: '描述',
             dataIndex: 'description',
             key: 'description',
-            width: '45%', // 设置列宽为30%
+            width: '35%', // 设置列宽为30%
         },
         {
             title: '操作',
@@ -212,15 +226,6 @@ const ManagementPage = () => {
 
     return (
         <div>
-            {contextHolder}
-            <Tabs
-                activeKey={selectedNamespace?.id}
-                onChange={handleTabChange}
-                items={namespaceList.map((namespace) => ({
-                    key: namespace.id,
-                    label: namespace.name,
-                }))}
-            />
             {loading ? (
                 <div>
                     <Spin />
@@ -233,11 +238,55 @@ const ManagementPage = () => {
                     </button>
                 </div>
             ) : (
-                <Table
-                    columns={columns}
-                    dataSource={fieldList}
-                    rowKey="name"
-                />
+                <div>
+                    <Form form={form}>
+                        <Row>
+                            <Col span={4}>
+                                <Form.Item name="namespace" label="命名空间">
+                                    <Select
+                                        placeholder="请选择命名空间"
+                                        allowClear
+                                        style={{width: "90%"}}
+                                        options={namespaceList}
+                                        notFoundContent={"暂无命名空间"}
+                                    />
+                                </Form.Item>
+                            </Col>
+                            <Col span={4}>
+                                <Form.Item name="fieldName" label="字段名">
+                                    <Input/>
+                                </Form.Item>
+                            </Col>
+                            <Form.Item style={{marginLeft: 30}}>
+                                <Button type="primary" htmlType="submit" onClick={queryManagementField}>
+                                    查询
+                                </Button>
+                            </Form.Item>
+                            <Form.Item style={{marginLeft: 30}}>
+                                <Button type="primary" htmlType="reset" onClick={() => form.resetFields()}>
+                                    重置
+                                </Button>
+                            </Form.Item>
+                        </Row>
+                    </Form>
+                    <Table
+                        columns={columns}
+                        dataSource={fieldList}
+                        pagination={{
+                            current: pageIndex,
+                            pageSize: pageSize,
+                            total: total,
+                            showSizeChanger: true,
+                            onChange: (current, pageSize) => {
+                                setPageIndex(current);
+                                setPageSize(pageSize);
+                                console.log(current, pageSize);
+                            }
+                        }}
+                        rowKey="name"
+                    />
+                </div>
+
             )}
 
             <Modal

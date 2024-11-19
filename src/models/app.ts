@@ -23,6 +23,7 @@ type Field = {
     gmtModified: string;
     appId: string;
     namespaceId: string;
+    namespace: string;
     name: string;
     description?: string;
 };
