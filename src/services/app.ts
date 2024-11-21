@@ -1,5 +1,15 @@
 import { request } from '@umijs/max';
 
+export async function saveApp(app: App) {
+    return request('/api/master/save', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: app
+    })
+}
+
 export async function getAppList() {
     return request('/api/master/apps', {
         method: 'GET'

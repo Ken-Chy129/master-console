@@ -1,6 +1,6 @@
-import { theme } from 'antd';
+import {Button, theme} from 'antd';
 import {history} from "@@/core/history";
-import {useModel} from "@umijs/max";
+import {Link, useModel} from "@umijs/max";
 import {useEffect} from "react";
 
 /**
@@ -47,7 +47,8 @@ const InfoCard: React.FC<{
                 flex: 1,
             }}
         >
-            <div
+        <Link to={'/home'}>
+            <div onClick={click}
                 style={{
                     display: 'flex',
                     gap: '4px',
@@ -80,6 +81,7 @@ const InfoCard: React.FC<{
                     {title}
                 </div>
             </div>
+            </Link>
             <div
                 style={{
                     fontSize: '14px',
@@ -91,12 +93,8 @@ const InfoCard: React.FC<{
             >
                 {desc}
             </div>
-            <a onClick={click} target="_blank" rel="noreferrer">
-                查看详情 {'>'}
-            </a>
-            <a onClick={click} target="_blank" rel="noreferrer">
-                查看机器 {'>'}
-            </a>
+            <Link to={'/management'}><Button onClick={click}>变量管控{'>'}</Button></Link>
+        <Link to={'/app/machine'}><Button onClick={click}>查看机器{'>'}</Button></Link>
         </div>
     );
 };

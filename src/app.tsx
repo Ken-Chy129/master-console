@@ -1,6 +1,6 @@
 import { Footer, Question, SelectLang, AvatarDropdown, AvatarName } from '@/components';
 import { LinkOutlined } from '@ant-design/icons';
-import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-components';
+import type {Settings as LayoutSettings} from '@ant-design/pro-components';
 import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history, Link } from '@umijs/max';
@@ -8,11 +8,7 @@ import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import { currentUser as queryCurrentUser } from '@/services/common';
 import React from 'react';
-import ReactDOM from 'react-dom';
-import zhMessages from './locales/zh-CN.json';
-import { IntlProvider } from 'react-intl';
-import {App, message, notification} from "antd";
-import {useModel} from "@@/exports";
+import {message} from "antd";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -59,7 +55,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 
   return {
     title: "Master",
-
+    openKeys: false,
     actionsRender: () => [<Question key="doc" />, <SelectLang key="SelectLang" />],
     avatarProps: {
       src: initialState?.currentUser?.avatar,
@@ -237,13 +233,3 @@ export const request = {
   ...errorConfig,
 };
 
-const messages = {
-  'zh-CN': zhMessages
-};
-const language = navigator.language;
-ReactDOM.render(
-    <IntlProvider locale={language} messages={messages[language]}>
-      <App/>
-    </IntlProvider>,
-    document.getElementById('root')
-);
