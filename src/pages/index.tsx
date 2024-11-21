@@ -1,6 +1,6 @@
 import React, {PropsWithChildren, useEffect, useState} from "react";
 import {getAppList, saveApp} from '@/services/app'
-import {Button, Col, Modal, Row, Spin} from "antd";
+import {Button, Col, message, Modal, Row, Spin} from "antd";
 import {LoadingOutlined, PlusCircleTwoTone} from "@ant-design/icons";
 
 import {Footer, InfoCard} from '@/components';
@@ -60,7 +60,6 @@ export default function AppPage() {
         {
             title: '应用名称',
             dataIndex: 'name',
-            tip: '名称是唯一的 key',
             formItemProps: {
                 rules: [
                     {
@@ -105,6 +104,16 @@ export default function AppPage() {
                     </div>
                 ) : (
                     <Row gutter={[16, 16]}>
+                        {appList.map((app, index) => (
+                            <Col span={8} key={app.id}>
+                                <InfoCard
+                                    index={String(index + 1)}
+                                    path={'/home'}
+                                    title={app.name}
+                                    desc={app.description}
+                                />
+                            </Col>
+                        ))}
                         <Col span={8}>
                             <PlusCircleTwoTone
                                 onClick={() => {
@@ -129,49 +138,27 @@ export default function AppPage() {
                                 }}
                             />
                         </Col>
-                        {appList.map((app, index) => (
-                            <Col span={8} key={app.id}>
-                                <InfoCard
-                                    index={String(index + 1)}
-                                    path={'/home'}
-                                    title={app.name}
-                                    desc={app.description}
-                                />
-                                {/*<Card*/}
-                                {/*    title={app.name}*/}
-                                {/*    bordered={false}*/}
-                                {/*    style={{ marginBottom: 16 }}*/}
-                                {/*    actions={[*/}
-                                {/*        <Space>*/}
-                                {/*            <a onClick={() => history.push('/app/' + app.id)}>ccccc</a>*/}
-                                {/*            <a href="#">Action 2</a>*/}
-                                {/*        </Space>,*/}
-                                {/*    ]}*/}
-                                {/*>*/}
-                                {/*    <p>{app.description}</p>*/}
-                                {/*</Card>*/}
-                            </Col>
-                        ))}
                     </Row>
                 )}
+                <CreateForm
+                    onCancel={() => handleModalVisible(false)}
+                    modalVisible={createModalVisible}
+                >
+                    <ProTable<App, App>
+                        onSubmit={async (value) => {
+                            const success = await saveApp(value);
+                            if (success) {
+                                handleModalVisible(false);
+                            } else {
+                                message.error("新建应用失败");
+                            }
+                        }}
+                        rowKey="id"
+                        type="form"
+                        columns={columns}
+                    />
+                </CreateForm>
             </div>
-            <CreateForm
-                onCancel={() => handleModalVisible(false)}
-                modalVisible={createModalVisible}
-            >
-                <ProTable<App, App>
-                    onSubmit={async (value) => {
-                        const success = await saveApp(value);
-                        if (success) {
-                            handleModalVisible(false);
-                            window.location.reload();
-                        }
-                    }}
-                    rowKey="id"
-                    type="form"
-                    columns={columns}
-                />
-            </CreateForm>
             <Footer/>
         </PageContainer>
     );

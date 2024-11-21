@@ -75,8 +75,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
       }
-      console.log(location)
-      console.log(appId)
       // 如果不是登录页页不是应用列表页，则检查是否有appId，如果没有则重定向到应用列表页
       if (location.pathname !== loginPath && location.pathname !== '/' && (appId === null || appId === undefined)) {
         // 临时逻辑，避免每次刷新都需要重新进入，后续移除
