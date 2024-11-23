@@ -1,8 +1,8 @@
 import {Button, Col, Form, Input, message, Pagination, Radio, Row, Select, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {FIELD_API, getManagementLog} from "@/services/management";
+import {FIELD_API, LOG_API} from "@/services/management";
 import {doGetRequest} from "@/util/http"
-import {getNamespaceListByAppId} from "@/services/management"
+import {NAMESPACE_API} from "@/services/management"
 import {getMachineList} from "@/services/common";
 
 const ManagementLogPage = () => {
@@ -87,13 +87,12 @@ const ManagementLogPage = () => {
     }
 
     const queryNamespace = () => {
-        getNamespaceListByAppId()
-            .then((res: any) => {
-                if (res.success === true) {
-                    res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.name});
-                    setNamespaceList(res.data);
-                }
-            });
+        doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, (res: any) => {
+            if (res.success === true) {
+                res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.name});
+                setNamespaceList(res.data);
+            }
+        });
     }
 
     const queryManagementLog = () => {
@@ -101,7 +100,7 @@ const ManagementLogPage = () => {
         const name = form.getFieldValue("name");
         const machines = form.getFieldValue("machines");
         const modifier = form.getFieldValue("modifier");
-        getManagementLog({namespace, name, machines, modifier, pageIndex, pageSize}).then((res: any) => {
+        doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespace, name, machines, modifier, pageIndex, pageSize}, (res: any) => {
             if (res.success === true) {
                 setTotal(res.total);
                 setManagementLog(res.data);

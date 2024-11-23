@@ -1,26 +1,5 @@
-import {request} from "@@/exports";
-
-
-// 获取应用下所有的命名空间
-export async function getNamespaceListByAppId() {
-    return request('/api/management/namespace/selectByAppId', {
-        method: 'GET',
-    })
-}
-
-// ====================== field ======================
-
-// export function getFieldListByNamespaceId(namespaceId: string, callback: any) {
-//     doGetRequest('/api/management/field/selectByNamespaceId', {namespaceId}, callback);
-// }
-
-
-// 变更日志
-export async function getManagementLog(params: {}) {
-    return request('/api/management/log/selectByCondition', {
-        method: 'GET',
-        params
-    })
+enum NAMESPACE_API {
+    LIST_BY_APPID = '/api/management/namespace/selectByAppId',
 }
 
 enum FIELD_API {
@@ -28,4 +7,8 @@ enum FIELD_API {
 
 }
 
-export {FIELD_API}
+enum LOG_API {
+    PAGE_BY_CONDITION = '/api/management/log/selectByCondition',
+}
+
+export {NAMESPACE_API, FIELD_API, LOG_API}

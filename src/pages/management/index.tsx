@@ -4,9 +4,10 @@ import {
     getManagementField,
     updateFieldValue
 } from "@/services/app";
-import {getNamespaceListByAppId, FIELD_API} from "@/services/management"
+import {NAMESPACE_API, FIELD_API} from "@/services/management"
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {getMachineList} from "@/services/common";
+import {doGetRequest} from "@/util/http";
 
 const ManagementPage = () => {
     const appId = localStorage.getItem('appId')!
@@ -46,7 +47,7 @@ const ManagementPage = () => {
     }, [pageIndex, pageSize]);
 
     const queryNamespace = () => {
-        getNamespaceListByAppId().then((res: any) => {
+        doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, (res: any) => {
             if (res.success === true) {
                 res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
                 setNamespaceList(res.data);
