@@ -16,12 +16,6 @@ export async function getAppList() {
     })
 }
 
-export async function getNamespaceList(appId: string) {
-    return request('/api/namespace/' + appId, {
-        method: 'GET'
-    })
-}
-
 export function getFieldListByNamespaceId(namespaceId: string, callback: any) {
     request('/api/management/field/selectByNamespaceId', {
         method: 'GET',

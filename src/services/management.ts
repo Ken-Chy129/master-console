@@ -2,11 +2,17 @@ import {request} from "@@/exports";
 
 
 // 获取应用下所有的命名空间
-export async function getNamespaceList(appId: string) {
-    return request('/api/namespace/' + appId, {
-        method: 'GET'
+export async function getNamespaceListByAppId() {
+    return request('/api/management/namespace/selectByAppId', {
+        method: 'GET',
     })
 }
+
+// ====================== field ======================
+
+// export function getFieldListByNamespaceId(namespaceId: string, callback: any) {
+//     doGetRequest('/api/management/field/selectByNamespaceId', {namespaceId}, callback);
+// }
 
 
 // 变更日志
@@ -16,3 +22,10 @@ export async function getManagementLog(params: {}) {
         params
     })
 }
+
+enum FIELD_API {
+    LIST_BY_NAMESPACE_ID = '/api/management/field/selectByNamespaceId',
+
+}
+
+export {FIELD_API}

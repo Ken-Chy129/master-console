@@ -1,7 +1,8 @@
 import {Button, Col, Form, Input, message, Pagination, Radio, Row, Select, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {getManagementLog} from "@/services/management";
-import {getFieldListByNamespaceId, getManagementField, getNamespaceList} from "@/services/app";
+import {FIELD_API, getManagementLog} from "@/services/management";
+import {doGetRequest} from "@/util/http"
+import {getNamespaceListByAppId} from "@/services/management"
 import {getMachineList} from "@/services/common";
 
 const ManagementLogPage = () => {
@@ -61,7 +62,7 @@ const ManagementLogPage = () => {
         },
     ];
 
-    const appId = localStorage.getItem('appId')!;
+    const appId = localStorage.getItem("appId")!;
     const [managementLog, setManagementLog] = useState<[]>([]);
     const [namespaceList, setNamespaceList] = useState<[]>([]);
     const [machineList, setMachineList] = useState<[]>([]);
@@ -86,7 +87,7 @@ const ManagementLogPage = () => {
     }
 
     const queryNamespace = () => {
-        getNamespaceList(appId)
+        getNamespaceListByAppId()
             .then((res: any) => {
                 if (res.success === true) {
                     res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.name});
@@ -100,7 +101,7 @@ const ManagementLogPage = () => {
         const name = form.getFieldValue("name");
         const machines = form.getFieldValue("machines");
         const modifier = form.getFieldValue("modifier");
-        getManagementLog({appId, namespace, name, machines, modifier, pageIndex, pageSize}).then((res: any) => {
+        getManagementLog({namespace, name, machines, modifier, pageIndex, pageSize}).then((res: any) => {
             if (res.success === true) {
                 setTotal(res.total);
                 setManagementLog(res.data);
@@ -109,9 +110,6 @@ const ManagementLogPage = () => {
     }
 
     const queryMachineList = () => {
-        if (appId === null || appId === undefined) {
-            return;
-        }
         getMachineList({appId})
             .then((res: any) => {
                 if (res.success === true) {
@@ -125,7 +123,8 @@ const ManagementLogPage = () => {
         if (selectedNamespace === null || selectedNamespace === undefined) {
             return;
         }
-        getFieldListByNamespaceId(selectedNamespace?.id, (res: any) => {
+        const namespaceId = selectedNamespace?.id;
+        doGetRequest(FIELD_API.LIST_BY_NAMESPACE_ID, {namespaceId}, (res: any) => {
             res.data.forEach((field: any) => {field.label = field.name; field.value = field.name});
             setFieldList(res.data);
         })

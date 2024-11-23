@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import {
     getFieldValue,
     getManagementField,
-    getNamespaceList,
     updateFieldValue
 } from "@/services/app";
+import {getNamespaceListByAppId, FIELD_API} from "@/services/management"
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {getMachineList} from "@/services/common";
 
@@ -46,7 +46,7 @@ const ManagementPage = () => {
     }, [pageIndex, pageSize]);
 
     const queryNamespace = () => {
-        getNamespaceList(appId).then((res: any) => {
+        getNamespaceListByAppId().then((res: any) => {
             if (res.success === true) {
                 res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
                 setNamespaceList(res.data);
