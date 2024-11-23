@@ -16,22 +16,12 @@ export async function getAppList() {
     })
 }
 
-export function getFieldListByNamespaceId(namespaceId: string, callback: any) {
-    request('/api/management/field/selectByNamespaceId', {
+export async function getFieldValue(fieldId: string) {
+    return request('/api/management/field/', {
         method: 'GET',
         params: {
-            namespaceId
+            fieldId
         }
-    }).then((res: any) => {
-        if (res.success) {
-            callback(res);
-        }
-    });
-}
-
-export async function getFieldValue(fieldId: string) {
-    return request('/api/field/' + fieldId, {
-        method: 'GET'
     })
 }
 
@@ -42,7 +32,7 @@ export async function updateFieldValue(body: {
     "pushType": string,
     "machineIds": string
 }) {
-    return request('/api/field/push', {
+    return request('/api/management/field/push', {
         method: 'POST',
         data: body
     })

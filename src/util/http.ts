@@ -22,4 +22,4 @@ const doPostRequest = (apiName: string, data: {}, handleResponse: any) => {
     })
 }
 
-export {doGetRequest}
+export {doGetRequest, doPostRequest}

@@ -7,7 +7,7 @@ import {
 import {NAMESPACE_API, FIELD_API} from "@/services/management"
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {getMachineList} from "@/services/common";
-import {doGetRequest} from "@/util/http";
+import {doGetRequest, doPostRequest} from "@/util/http";
 
 const ManagementPage = () => {
     const appId = localStorage.getItem('appId')!
@@ -48,10 +48,8 @@ const ManagementPage = () => {
 
     const queryNamespace = () => {
         doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, (res: any) => {
-            if (res.success === true) {
-                res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
-                setNamespaceList(res.data);
-            }
+            res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
+            setNamespaceList(res.data);
         });
     }
 
@@ -92,27 +90,23 @@ const ManagementPage = () => {
 
     const handleDistributionClick = (fieldId: string) => {
         setModalTitle("字段值分布情况");
-        getFieldValue(fieldId)
-            .then((res: any) => {
-                if (res.success === true) {
-                    console.log(res.data)
-                    setFieldValue(res.data);
-                    const machineValueList: MachineFieldValue[] = [];
-                    const machineValueMap:  {[key: string]: string} = res.data.machineValueMap;
-                    Object.entries(machineValueMap).forEach(([key, value]: [string, string]) => {
-                        const [ipAddress, port] = key.split(':');
-                        if (ipAddress && port) {
-                            machineValueList.push({
-                                ipAddress,
-                                port,
-                                value
-                            });
-                        }
+        doGetRequest(FIELD_API.GET, {fieldId}, (res: any) => {
+            setFieldValue(res.data);
+            const machineValueList: MachineFieldValue[] = [];
+            const machineValueMap:  {[key: string]: string} = res.data.machineValueMap;
+            Object.entries(machineValueMap).forEach(([key, value]: [string, string]) => {
+                const [ipAddress, port] = key.split(':');
+                if (ipAddress && port) {
+                    machineValueList.push({
+                        ipAddress,
+                        port,
+                        value
                     });
-                    setMachineFieldValue(machineValueList);
                 }
-                setShowModalIndex(2);
             });
+            setMachineFieldValue(machineValueList);
+            setShowModalIndex(2);
+        });
     };
 
     const handleValuePush = () => {
@@ -130,14 +124,14 @@ const ManagementPage = () => {
         const pushType = selectedPushType;
         const machineIds= selectedMachineIds.join(',');
         console.log(fieldId,value,pushType,machineIds)
-        updateFieldValue({
+
+        doPostRequest(FIELD_API.PUSH, {
             fieldId,
             namespace,
             value,
             pushType,
             machineIds
-        }).then((res: any) => {
-            console.log(res)
+        }, (res: any) => {
             if (res.success === true) {
                 message.success("推送成功");
             } else {

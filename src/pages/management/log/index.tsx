@@ -101,10 +101,8 @@ const ManagementLogPage = () => {
         const machines = form.getFieldValue("machines");
         const modifier = form.getFieldValue("modifier");
         doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespace, name, machines, modifier, pageIndex, pageSize}, (res: any) => {
-            if (res.success === true) {
-                setTotal(res.total);
-                setManagementLog(res.data);
-            }
+            setTotal(res.total);
+            setManagementLog(res.data);
         });
     }
 
