@@ -51,7 +51,6 @@ export async function getInitialState(): Promise<{
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
-  // const {appId, setAppId} = useModel("model");
 
   return {
     title: "Master",
@@ -105,16 +104,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     ],
     links: isDev
       ? [
-          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
+          <a href="https://github.com/Ken-Chy129" target="_blank">
             <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
+            <span>联系作者</span>
+          </a>,
         ]
       : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
+    breakpoint: false,
     postMenuData: () => {
       const data = [
         {

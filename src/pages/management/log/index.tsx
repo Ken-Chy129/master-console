@@ -63,8 +63,6 @@ const ManagementLogPage = () => {
     ];
 
     const appId = localStorage.getItem('appId')!;
-    const [messageApi, contextHolder] = message.useMessage();
-
     const [managementLog, setManagementLog] = useState<[]>([]);
     const [namespaceList, setNamespaceList] = useState<[]>([]);
     const [machineList, setMachineList] = useState<[]>([]);
@@ -105,7 +103,6 @@ const ManagementLogPage = () => {
         const modifier = form.getFieldValue("modifier");
         getManagementLog({appId, namespace, name, machines, modifier, pageIndex, pageSize}).then((res: any) => {
             if (res.success === true) {
-                console.log(res);
                 setTotal(res.total);
                 setManagementLog(res.data);
             }
@@ -143,11 +140,7 @@ const ManagementLogPage = () => {
     };
 
     return <>
-        {contextHolder}
-        <Form
-            form={form}
-            // style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
-        >
+        <Form form={form}>
             <Row>
                 <Col span={4}>
                     <Form.Item name="namespace" label="命名空间">
