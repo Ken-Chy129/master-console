@@ -22,22 +22,17 @@ export async function getNamespaceList(appId: string) {
     })
 }
 
-export async function getFieldListByNamespaceId(namespaceId: string) {
-    return request('/api/field/queryByNamespace', {
+export function getFieldListByNamespaceId(namespaceId: string, callback: any) {
+    request('/api/management/field/selectByNamespaceId', {
         method: 'GET',
         params: {
             namespaceId
         }
-    })
-}
-
-export async function getFieldList(appId: string) {
-    return request('/api/field/list', {
-        method: 'GET',
-        params: {
-            'appId': appId
+    }).then((res: any) => {
+        if (res.success) {
+            callback(res);
         }
-    })
+    });
 }
 
 export async function getFieldValue(fieldId: string) {

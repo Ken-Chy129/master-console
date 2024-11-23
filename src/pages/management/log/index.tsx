@@ -1,8 +1,7 @@
 import {Button, Col, Form, Input, message, Pagination, Radio, Row, Select, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {getManagementLog} from "@/services/management/record";
-import {useModel} from "@umijs/max";
-import {getFieldListByNamespaceId, getNamespaceList} from "@/services/app";
+import {getManagementLog} from "@/services/management";
+import {getFieldListByNamespaceId, getManagementField, getNamespaceList} from "@/services/app";
 import {getMachineList} from "@/services/common";
 
 const ManagementLogPage = () => {
@@ -122,21 +121,14 @@ const ManagementLogPage = () => {
             });
     }
 
-    const queryFieldNameList = (namespaceId: any) => {
-        getFieldListByNamespaceId(namespaceId)
-            .then((res: any) => {
-                if (res.success === true) {
-                    res.data.forEach((field: any) => {field.label = field.name; field.value = field.name});
-                    setFieldList(res.data);
-                }
-            });
-    }
-
     const handleNamespaceChange = (_:any, selectedNamespace:any) => {
         if (selectedNamespace === null || selectedNamespace === undefined) {
             return;
         }
-        queryFieldNameList(selectedNamespace?.id);
+        getFieldListByNamespaceId(selectedNamespace?.id, (res: any) => {
+            res.data.forEach((field: any) => {field.label = field.name; field.value = field.name});
+            setFieldList(res.data);
+        })
     };
 
     return <>

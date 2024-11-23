@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-    getFieldListByNamespaceId,
     getFieldValue,
     getManagementField,
     getNamespaceList,
     updateFieldValue
 } from "@/services/app";
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
-import {history, useModel} from "@umijs/max";
 import {getMachineList} from "@/services/common";
-import {showErrorTips} from "@/util/common"
 
 const ManagementPage = () => {
     const appId = localStorage.getItem('appId')!
