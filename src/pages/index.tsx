@@ -1,10 +1,11 @@
 import React, {PropsWithChildren, useEffect, useState} from "react";
-import {getAppList, saveApp} from '@/services/app'
+import {APP_API} from '@/services/app'
 import {Button, Col, message, Modal, Row, Spin} from "antd";
 import {LoadingOutlined, PlusCircleTwoTone} from "@ant-design/icons";
 
 import {Footer, InfoCard} from '@/components';
 import {PageContainer, ProDescriptionsItemProps, ProTable} from "@ant-design/pro-components";
+import {doGetRequest, doPostRequest} from "@/util/http";
 
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -40,21 +41,20 @@ export default function AppPage() {
         setLoading(true);
         setError(null);
 
-        getAppList()
-            .then((res: any) => {
-                if (res.success === true) {
-                    setAppList(res.data);
-                } else {
-                    setError('Failed to fetch app list.');
-                }
-            })
-            .catch((err) => {
-                setError('An error occurred while fetching app list.');
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+        doGetRequest(APP_API.LIST, {}, (res) => {
+            setAppList(res.data);
+        }, undefined, () => {
+            setLoading(false);
+        });
     }, []);
+
+    const createApp = (app: {}) => {
+        doPostRequest(APP_API.SAVE, {...app, status: 1}, _ => {
+            message.success("新建应用成功").then(_ => {});
+        }, () => {
+            handleModalVisible(false);
+        })
+    }
 
     const columns: ProDescriptionsItemProps<App>[] = [
         {
@@ -145,14 +145,7 @@ export default function AppPage() {
                     modalVisible={createModalVisible}
                 >
                     <ProTable<App, App>
-                        onSubmit={async (value) => {
-                            const success = await saveApp(value);
-                            if (success) {
-                                handleModalVisible(false);
-                            } else {
-                                message.error("新建应用失败");
-                            }
-                        }}
+                        onSubmit={createApp}
                         rowKey="id"
                         type="form"
                         columns={columns}

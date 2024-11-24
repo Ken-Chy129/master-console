@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {
-    getFieldValue,
-    getManagementField,
-    updateFieldValue
-} from "@/services/app";
 import {NAMESPACE_API, FIELD_API} from "@/services/management"
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {getMachineList} from "@/services/common";
@@ -54,25 +49,12 @@ const ManagementPage = () => {
     }
 
     const queryManagementField = () => {
-        setLoading(true);
-        setError(null);
         const namespaceId = form.getFieldValue("namespace");
         const fieldName = form.getFieldValue("fieldName");
-        getManagementField({appId, namespaceId, fieldName, pageIndex, pageSize})
-            .then((res: any) => {
-                if (res.success === true) {
-                    setTotal(res.total)
-                    setFieldList(res.data);
-                } else {
-                    setError('获取字段列表失败:' + res.message);
-                }
-            })
-            .catch(() => {
-                setError('发生异常');
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+        doGetRequest(FIELD_API.PAGE_BY_CONDITION, {namespaceId, fieldName, pageIndex, pageSize}, (res: any) => {
+            setTotal(res.total)
+            setFieldList(res.data);
+        });
     };
 
     const handlePushClick = (fieldId: string) => {
@@ -123,20 +105,10 @@ const ManagementPage = () => {
         const value = newValue ?? '';
         const pushType = selectedPushType;
         const machineIds= selectedMachineIds.join(',');
-        console.log(fieldId,value,pushType,machineIds)
 
-        doPostRequest(FIELD_API.PUSH, {
-            fieldId,
-            namespace,
-            value,
-            pushType,
-            machineIds
-        }, (res: any) => {
-            if (res.success === true) {
-                message.success("推送成功");
-            } else {
-                message.error("推送失败")
-            }
+        doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machineIds}, (_: any) => {
+            message.success("推送成功").then(_ => {});
+        }, undefined, () => {
             handleModalClose();
         });
     }
