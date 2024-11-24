@@ -41,19 +41,16 @@ export default function AppPage() {
         setLoading(true);
         setError(null);
 
-        doGetRequest(APP_API.LIST, {}, (res) => {
-            setAppList(res.data);
-        }, undefined, () => {
-            setLoading(false);
+        doGetRequest(APP_API.LIST, {}, {
+            onSuccess: (res) => setAppList(res.data),
+            onFinally: () => setLoading(false)
         });
     }, []);
 
     const createApp = (app: {}) => {
-        doPostRequest(APP_API.SAVE, {...app, status: 1}, _ => {
-            message.success("新建应用成功").then(_ => {});
-        }, () => {
-            handleModalVisible(false);
-        })
+        doPostRequest(APP_API.SAVE, {...app, status: 1}, {
+            onSuccess: () => message.success("新建应用成功").then(_ => {})
+        });
     }
 
     const columns: ProDescriptionsItemProps<App>[] = [

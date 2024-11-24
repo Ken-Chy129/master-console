@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {NAMESPACE_API, FIELD_API} from "@/services/management"
+import {MACHINE_API} from "@/services/app"
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
-import {getMachineList} from "@/services/common";
 import {doGetRequest, doPostRequest} from "@/util/http";
 
 const ManagementPage = () => {
@@ -42,52 +42,57 @@ const ManagementPage = () => {
     }, [pageIndex, pageSize]);
 
     const queryNamespace = () => {
-        doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, (res: any) => {
-            res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
-            setNamespaceList(res.data);
+        doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, {
+            onSuccess: (res: any) => {
+                res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
+                setNamespaceList(res.data);
+            }
         });
     }
 
     const queryManagementField = () => {
         const namespaceId = form.getFieldValue("namespace");
         const fieldName = form.getFieldValue("fieldName");
-        doGetRequest(FIELD_API.PAGE_BY_CONDITION, {namespaceId, fieldName, pageIndex, pageSize}, (res: any) => {
-            setTotal(res.total)
-            setFieldList(res.data);
+        doGetRequest(FIELD_API.PAGE_BY_CONDITION, {namespaceId, fieldName, pageIndex, pageSize}, {
+            onSuccess: (res: any) => {
+                setTotal(res.total)
+                setFieldList(res.data);
+            }
         });
     };
 
     const handlePushClick = (fieldId: string) => {
         setSelectedField(fieldList.find(value => value.id === fieldId));
         setModalTitle("字段值推送");
-        getMachineList({appId})
-            .then((res: any) => {
-                if (res.success === true) {
-                    res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port})
-                    setMachineList(res.data);
-                }
-                setShowModalIndex(1);
-            });
+        doGetRequest(MACHINE_API.LIST, {}, {
+            onSuccess: (res) => {
+                res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port});
+                setMachineList(res.data);
+            },
+            onFinally: () => setShowModalIndex(1)
+        });
     };
 
     const handleDistributionClick = (fieldId: string) => {
         setModalTitle("字段值分布情况");
-        doGetRequest(FIELD_API.GET, {fieldId}, (res: any) => {
-            setFieldValue(res.data);
-            const machineValueList: MachineFieldValue[] = [];
-            const machineValueMap:  {[key: string]: string} = res.data.machineValueMap;
-            Object.entries(machineValueMap).forEach(([key, value]: [string, string]) => {
-                const [ipAddress, port] = key.split(':');
-                if (ipAddress && port) {
-                    machineValueList.push({
-                        ipAddress,
-                        port,
-                        value
-                    });
-                }
-            });
-            setMachineFieldValue(machineValueList);
-            setShowModalIndex(2);
+        doGetRequest(FIELD_API.GET, {fieldId}, {
+            onSuccess: (res: any) => {
+                setFieldValue(res.data);
+                const machineValueList: MachineFieldValue[] = [];
+                const machineValueMap: { [key: string]: string } = res.data.machineValueMap;
+                Object.entries(machineValueMap).forEach(([key, value]: [string, string]) => {
+                    const [ipAddress, port] = key.split(':');
+                    if (ipAddress && port) {
+                        machineValueList.push({
+                            ipAddress,
+                            port,
+                            value
+                        });
+                    }
+                });
+                setMachineFieldValue(machineValueList);
+            },
+            onFinally: () => setShowModalIndex(2)
         });
     };
 
@@ -106,10 +111,9 @@ const ManagementPage = () => {
         const pushType = selectedPushType;
         const machineIds= selectedMachineIds.join(',');
 
-        doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machineIds}, (_: any) => {
-            message.success("推送成功").then(_ => {});
-        }, undefined, () => {
-            handleModalClose();
+        doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machineIds}, {
+            onSuccess: _ => message.success("推送成功").then(_ => {}),
+            onFinally: () => handleModalClose()
         });
     }
 

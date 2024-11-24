@@ -1,83 +1,45 @@
 import {request} from "@@/exports";
 import {message} from "antd";
 
-// 函数重载签名
-function doGetRequest(apiName: string, params: {}, onSuccess: (response: any) => void, onFinally: () => void): void;
 function doGetRequest(
     apiName: string,
     params: {},
-    onSuccess: (response: any) => void,
-    onError?: (response: any) => void,
-    onFinally?: () => void
-): void;
-
-// 实现
-function doGetRequest(
-    apiName: string,
-    params: {},
-    onSuccess: (response: any) => void,
-    onError?: (response: any) => void,
-    onFinally?: () => void
+    recall: {
+        onSuccess: (response: any) => void,
+        onError?: (response: any) => void,
+        onFinally?: () => void
+    }
 ) {
     request(apiName, {
         method: 'GET',
         params
     }).then((res) => {
-        if (res.success) {
-            onSuccess(res);
-        } else {
-            if (onError) {
-                onError(res);
-            } else {
-                message.error(res.errorMsg).then(() => {});
-            }
-        }
+        res.success ? recall.onSuccess(res) : recall.onError ? recall.onError(res) : message.error(res.errorMsg);
     }).catch(() => {
-        message.error("系统异常").then(() => {});
+        message.error("系统异常").then(_ => {});
     }).finally(() => {
-        if (onFinally) {
-            onFinally();
-        }
+        recall.onFinally?.();
     });
 }
 
-// 函数重载签名
-function doPostRequest(apiName: string, data: {}, onSuccess: (response: any) => void, onFinally: () => void): void;
 function doPostRequest(
     apiName: string,
     data: {},
-    onSuccess: (response: any) => void,
-    onError?: (response: any) => void,
-    onFinally?: () => void
-): void;
-
-// 实现
-function doPostRequest(
-    apiName: string,
-    data: {},
-    onSuccess: (response: any) => void,
-    onError?: (response: any) => void,
-    onFinally?: () => void
+    recall: {
+        onSuccess: (response: any) => void,
+        onError?: (response: any) => void,
+        onFinally?: () => void
+    }
 ) {
     request(apiName, {
         method: 'POST',
         data
     }).then((res) => {
-        if (res.success) {
-            onSuccess(res);
-        } else {
-            if (onError) {
-                onError(res);
-            } else {
-                message.error(res.errorMsg).then(() => {});
-            }
-        }
+        res.success ? recall.onSuccess(res) : recall.onError ? recall.onError(res) : message.error(res.errorMsg);
     }).catch(() => {
-        message.error("系统异常").then(() => {});
+        message.error("系统异常").then(_ => {});
     }).finally(() => {
-        if (onFinally) {
-            onFinally();
-        }
+        recall.onFinally?.();
     });
 }
 

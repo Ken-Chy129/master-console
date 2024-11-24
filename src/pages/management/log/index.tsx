@@ -87,8 +87,8 @@ const ManagementLogPage = () => {
     }
 
     const queryNamespace = () => {
-        doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, (res: any) => {
-            if (res.success === true) {
+        doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, {
+            onSuccess: (res: any) => {
                 res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.name});
                 setNamespaceList(res.data);
             }
@@ -100,9 +100,11 @@ const ManagementLogPage = () => {
         const name = form.getFieldValue("name");
         const machines = form.getFieldValue("machines");
         const modifier = form.getFieldValue("modifier");
-        doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespace, name, machines, modifier, pageIndex, pageSize}, (res: any) => {
-            setTotal(res.total);
-            setManagementLog(res.data);
+        doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespace, name, machines, modifier, pageIndex, pageSize}, {
+            onSuccess:  (res: any) => {
+                setTotal(res.total);
+                setManagementLog(res.data);
+            }
         });
     }
 
@@ -121,10 +123,12 @@ const ManagementLogPage = () => {
             return;
         }
         const namespaceId = selectedNamespace?.id;
-        doGetRequest(FIELD_API.LIST_BY_NAMESPACE_ID, {namespaceId}, (res: any) => {
-            res.data.forEach((field: any) => {field.label = field.name; field.value = field.name});
-            setFieldList(res.data);
-        })
+        doGetRequest(FIELD_API.LIST_BY_NAMESPACE_ID, {namespaceId}, {
+            onSuccess: (res: any) => {
+                res.data.forEach((field: any) => {field.label = field.name; field.value = field.name});
+                setFieldList(res.data);
+            }
+        });
     };
 
     return <>
