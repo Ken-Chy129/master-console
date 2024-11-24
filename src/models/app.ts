@@ -24,6 +24,7 @@ type Field = {
     appId: string;
     namespaceId: string;
     namespace: string;
+    className: string;
     name: string;
     description?: string;
 };

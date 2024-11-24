@@ -73,6 +73,12 @@ const ManagementLogPage = () => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
+        if (history.state.usr) {
+            form.setFieldValue("namespace", history.state.usr.namespace);
+            form.setFieldValue("name", history.state.usr.fieldName);
+            const namespaceId = history.state.usr.namespaceId;
+            queryNamespaceField(namespaceId);
+        }
         queryManagementLog();
         queryNamespace();
         queryMachineList();
@@ -118,17 +124,21 @@ const ManagementLogPage = () => {
             });
     }
 
-    const handleNamespaceChange = (_:any, selectedNamespace:any) => {
-        if (selectedNamespace === null || selectedNamespace === undefined) {
-            return;
-        }
-        const namespaceId = selectedNamespace?.id;
+    const queryNamespaceField = (namespaceId: string) => {
         doGetRequest(FIELD_API.LIST_BY_NAMESPACE_ID, {namespaceId}, {
             onSuccess: (res: any) => {
                 res.data.forEach((field: any) => {field.label = field.name; field.value = field.name});
                 setFieldList(res.data);
             }
         });
+    }
+
+    const handleNamespaceChange = (_:any, selectedNamespace:any) => {
+        if (selectedNamespace === null || selectedNamespace === undefined) {
+            return;
+        }
+        const namespaceId = selectedNamespace?.id;
+        queryNamespaceField(namespaceId);
     };
 
     return <>

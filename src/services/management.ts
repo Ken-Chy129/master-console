@@ -5,7 +5,7 @@ enum NAMESPACE_API {
 enum FIELD_API {
     LIST_BY_NAMESPACE_ID = '/api/management/field/selectByNamespaceId',
     PAGE_BY_CONDITION = '/api/management/field/selectByCondition',
-    GET = '/api/management/field/',
+    GET = '/api/management/field/get',
     PUSH = '/api/management/field/push',
 }
 

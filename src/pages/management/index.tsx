@@ -3,6 +3,8 @@ import {NAMESPACE_API, FIELD_API} from "@/services/management"
 import {MACHINE_API} from "@/services/app"
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {doGetRequest, doPostRequest} from "@/util/http";
+import {history} from "@@/core/history";
+
 
 const ManagementPage = () => {
     const appId = localStorage.getItem('appId')!
@@ -11,7 +13,6 @@ const ManagementPage = () => {
     const [fieldList, setFieldList] = useState<Field[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedNamespace, setSelectedNamespace] = useState<Namespace>();
     const [showModalIndex, setShowModalIndex] = useState(0)
     const [modalTitle, setModalTitle] = useState<string>('');
 
@@ -55,7 +56,7 @@ const ManagementPage = () => {
         const fieldName = form.getFieldValue("fieldName");
         doGetRequest(FIELD_API.PAGE_BY_CONDITION, {namespaceId, fieldName, pageIndex, pageSize}, {
             onSuccess: (res: any) => {
-                setTotal(res.total)
+                setTotal(res.total);
                 setFieldList(res.data);
             }
         });
@@ -96,21 +97,23 @@ const ManagementPage = () => {
         });
     };
 
+    const handleShowLog = (field: Field) => {
+        const namespace = field.namespace;
+        const fieldName = field.name;
+        const namespaceId = field.namespaceId;
+        history.push({
+            pathname: '/management/log?namespace=',
+        }, {
+            namespace, fieldName, namespaceId
+        });
+    }
+
     const handleValuePush = () => {
-        if (selectedField?.id === null || selectedField?.id === undefined || selectedField?.id === '') {
-            message.error("fieldId为空")
-            return;
-        }
-        if (selectedNamespace?.name === null || selectedNamespace?.name === undefined || selectedNamespace?.name === '') {
-            message.error("namespace为空")
-            return;
-        }
-        const fieldId = selectedField.id;
-        const namespace = selectedNamespace.name
+        const fieldId = selectedField!.id;
+        const namespace = selectedField!.namespace
         const value = newValue ?? '';
         const pushType = selectedPushType;
         const machineIds= selectedMachineIds.join(',');
-
         doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machineIds}, {
             onSuccess: _ => message.success("推送成功").then(_ => {}),
             onFinally: () => handleModalClose()
@@ -153,7 +156,7 @@ const ManagementPage = () => {
                   <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handleDistributionClick(field.id)}>
                     查看分布
                   </Button>
-                  <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handlePushClick(field.id)}>
+                  <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handleShowLog(field)}>
                     查看日志
                   </Button>
                 </span>
@@ -281,23 +284,14 @@ const ManagementPage = () => {
                     <Form.Item name="fieldName" label="变量名">
                         {selectedField?.name}
                     </Form.Item>
+                    <Form.Item name="className" label="全类名">
+                        {selectedField?.className}
+                    </Form.Item>
                     <Form.Item name="namespace" label="命名空间">
-                        {selectedNamespace?.name}
+                        {selectedField?.namespace}
                     </Form.Item>
                     <Form.Item name="fieldDescription" label="变量描述">
                         {selectedField?.description}
-                    </Form.Item>
-                    <Form.Item
-                        noStyle
-                        shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
-                    >
-                        {({ getFieldValue }) =>
-                            getFieldValue('gender') === 'other' ? (
-                                <Form.Item name="customizeGender" label="Customize Gender" rules={[{ required: true }]}>
-                                    <Input />
-                                </Form.Item>
-                            ) : null
-                        }
                     </Form.Item>
                     <Form.Item name="fieldValue" label="变量值">
                         <Input.TextArea value={newValue} onChange={(e) => setNewValue(e.target.value)} rows={4} />
@@ -352,14 +346,14 @@ const ManagementPage = () => {
                     onFinish={onFinish}
                     style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
                 >
+                    <Form.Item name="fieldName" label="变量名">
+                        {fieldValue?.name}
+                    </Form.Item>
                     <Form.Item name="className" label="全类名">
                         {fieldValue?.className}
                     </Form.Item>
                     <Form.Item name="namespace" label="命名空间">
                         {fieldValue?.namespace}
-                    </Form.Item>
-                    <Form.Item name="fieldName" label="变量名">
-                        {fieldValue?.name}
                     </Form.Item>
                     <Form.Item name="description" label="变量描述">
                         {fieldValue?.description}
