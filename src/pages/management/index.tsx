@@ -4,26 +4,23 @@ import {MACHINE_API} from "@/services/app"
 import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {doGetRequest, doPostRequest} from "@/util/http";
 import {history} from "@@/core/history";
+import {Loading} from "@/components"
 
 
 const ManagementPage = () => {
-    const appId = localStorage.getItem('appId')!
-
     const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
     const [fieldList, setFieldList] = useState<Field[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showModalIndex, setShowModalIndex] = useState(0)
-    const [modalTitle, setModalTitle] = useState<string>('');
 
     const [machineList, setMachineList] = useState<Machine[]>([]);
-    const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>([])
-    const [newValue, setNewValue] = useState<string>("")
-    const [selectedField, setSelectedField] = useState<Field>();
-    const [selectedPushType, setSelectedPushType] = useState<string>("all");
+    const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>([]);
     const [fieldValue, setFieldValue] = useState<FieldValue>();
     const [machineFieldValue, setMachineFieldValue] = useState<MachineFieldValue[]>([]);
-    const [form] = Form.useForm();
+    const [conditionForm] = Form.useForm();
+    const [pushForm] = Form.useForm();
+    const [fieldValueForm] = Form.useForm();
     const [pageIndex, setPageIndex] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [total, setTotal] = useState(0);
@@ -52,8 +49,8 @@ const ManagementPage = () => {
     }
 
     const queryManagementField = () => {
-        const namespaceId = form.getFieldValue("namespace");
-        const fieldName = form.getFieldValue("fieldName");
+        const namespaceId = conditionForm.getFieldValue("namespace");
+        const fieldName = conditionForm.getFieldValue("fieldName");
         doGetRequest(FIELD_API.PAGE_BY_CONDITION, {namespaceId, fieldName, pageIndex, pageSize}, {
             onSuccess: (res: any) => {
                 setTotal(res.total);
@@ -63,8 +60,16 @@ const ManagementPage = () => {
     };
 
     const handlePushClick = (fieldId: string) => {
-        setSelectedField(fieldList.find(value => value.id === fieldId));
-        setModalTitle("字段值推送");
+        const field = fieldList.find(value => value.id === fieldId)
+        pushForm.setFieldsValue({
+            id: field?.id,
+            fieldName: field?.name,
+            className: field?.className,
+            namespace: field?.namespace,
+            fieldDescription: field?.description,
+            pushType: "all",
+            isUpdateTemplate: true
+        })
         doGetRequest(MACHINE_API.LIST, {}, {
             onSuccess: (res) => {
                 res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port});
@@ -75,7 +80,6 @@ const ManagementPage = () => {
     };
 
     const handleDistributionClick = (fieldId: string) => {
-        setModalTitle("字段值分布情况");
         doGetRequest(FIELD_API.GET, {fieldId}, {
             onSuccess: (res: any) => {
                 setFieldValue(res.data);
@@ -109,11 +113,13 @@ const ManagementPage = () => {
     }
 
     const handleValuePush = () => {
-        const fieldId = selectedField!.id;
-        const namespace = selectedField!.namespace
-        const value = newValue ?? '';
-        const pushType = selectedPushType;
-        const machineIds= selectedMachineIds.join(',');
+        const fieldId = pushForm.getFieldValue("id");
+        const namespace = pushForm.getFieldValue("namespace")
+        const value = pushForm.getFieldValue("fieldValue");
+        const pushType = pushForm.getFieldValue("pushType");
+        const machineIds = selectedMachineIds.join(',');
+        const isUpdateTemplate = pushForm.getFieldValue("isUpdateTemplate");
+
         doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machineIds}, {
             onSuccess: _ => message.success("推送成功").then(_ => {}),
             onFinally: () => handleModalClose()
@@ -121,8 +127,8 @@ const ManagementPage = () => {
     }
 
     const handleModalClose = () => {
-        form.resetFields(); // 重置表单字段
-        setNewValue('')
+        pushForm.resetFields(); // 重置表单字段
+        fieldValueForm.resetFields(); // 重置表单字段
         setShowModalIndex(0);
     };
 
@@ -183,34 +189,17 @@ const ManagementPage = () => {
         },
     ]
 
-    function onFinish() {
-
-    }
-
-
     const handleMachineChange = (_:any, chooseMachines:any) => {
         const ids: string[] = [];
         chooseMachines.forEach((machine: any) => ids.push(machine.id))
         setSelectedMachineIds(ids)
     };
 
-
     return (
         <div>
-            {loading ? (
+            <Loading loading={loading} error={error} content={
                 <div>
-                    <Spin />
-                </div>
-            ) : error ? (
-                <div>
-                    <p>Error: {error}</p>
-                    <button onClick={() => window.location.reload()}>
-                        Retry
-                    </button>
-                </div>
-            ) : (
-                <div>
-                    <Form form={form}>
+                    <Form form={conditionForm}>
                         <Row>
                             <Col span={4}>
                                 <Form.Item name="namespace" label="命名空间">
@@ -234,7 +223,7 @@ const ManagementPage = () => {
                                 </Button>
                             </Form.Item>
                             <Form.Item style={{marginLeft: 30}}>
-                                <Button type="primary" htmlType="reset" onClick={() => form.resetFields()}>
+                                <Button type="primary" htmlType="reset" onClick={() => conditionForm.resetFields()}>
                                     重置
                                 </Button>
                             </Form.Item>
@@ -251,17 +240,15 @@ const ManagementPage = () => {
                             onChange: (current, pageSize) => {
                                 setPageIndex(current);
                                 setPageSize(pageSize);
-                                console.log(current, pageSize);
                             }
                         }}
-                        rowKey="name"
+                        rowKey="id"
                     />
                 </div>
-
-            )}
+            }/>
 
             <Modal
-                title={modalTitle}
+                title="字段值推送"
                 open={showModalIndex == 1}
                 onOk={handleModalClose}
                 onCancel={handleModalClose}
@@ -277,27 +264,26 @@ const ManagementPage = () => {
                 ]}
             >
                 <Form
-                    form={form}
-                    onFinish={onFinish}
-                    style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
+                    form={pushForm}
+                    style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}
                 >
                     <Form.Item name="fieldName" label="变量名">
-                        {selectedField?.name}
+                        {pushForm.getFieldValue("fieldName")}
                     </Form.Item>
                     <Form.Item name="className" label="全类名">
-                        {selectedField?.className}
+                        {pushForm.getFieldValue("className")}
                     </Form.Item>
                     <Form.Item name="namespace" label="命名空间">
-                        {selectedField?.namespace}
+                        {pushForm.getFieldValue("namespace")}
                     </Form.Item>
                     <Form.Item name="fieldDescription" label="变量描述">
-                        {selectedField?.description}
+                        {pushForm.getFieldValue("fieldDescription")}
                     </Form.Item>
                     <Form.Item name="fieldValue" label="变量值">
-                        <Input.TextArea value={newValue} onChange={(e) => setNewValue(e.target.value)} rows={4} />
+                        <Input.TextArea value={pushForm.getFieldValue("fieldValue")} onChange={(e) => pushForm.setFieldValue("fieldValue", e.target.value)} rows={4}/>
                     </Form.Item>
                     <Form.Item name="pushType" label="推送方式">
-                        <Radio.Group defaultValue={"all"} value={selectedPushType} onChange={(e) => setSelectedPushType(e.target.value)}>
+                        <Radio.Group value={pushForm.getFieldValue("pushType")}>
                             <Radio value={"all"}>所有机器</Radio>
                             <Radio value={"specific"}>指定机器</Radio>
                         </Radio.Group>
@@ -306,7 +292,7 @@ const ManagementPage = () => {
                         noStyle
                         shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}
                     >
-                        {({ getFieldValue }) => {
+                        {({getFieldValue}) => {
                             return getFieldValue('pushType') === 'specific' ? (
                                 <Form.Item name="selectedMachines" label="推送机器">
                                     <Select
@@ -322,11 +308,17 @@ const ManagementPage = () => {
                             ) : null
                         }}
                     </Form.Item>
+                    <Form.Item name="isUpdateTemplate" label="是否更新默认模板值">
+                        <Radio.Group value={pushForm.getFieldValue("isUpdateTemplate")}>
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group>
+                    </Form.Item>
                 </Form>
             </Modal>
 
             <Modal
-                title={modalTitle}
+                title="字段值分布情况"
                 open={showModalIndex == 2}
                 onOk={handleModalClose}
                 onCancel={handleModalClose}
@@ -342,8 +334,7 @@ const ManagementPage = () => {
                 ]}
             >
                 <Form
-                    form={form}
-                    onFinish={onFinish}
+                    form={fieldValueForm}
                     style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
                 >
                     <Form.Item name="fieldName" label="变量名">

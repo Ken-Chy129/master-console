@@ -1,6 +1,15 @@
+import {Loading} from "@/components/Common/Loading";
+import {Form} from "antd";
+
 const HomePage = () => {
     return <>
-        hello
+        <Loading loading={false} content={
+            <Form>
+                <Form.Item>
+                    asdasd
+                </Form.Item>
+            </Form>
+        }/>
     </>
 }
 

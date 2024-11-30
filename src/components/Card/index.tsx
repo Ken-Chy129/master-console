@@ -1,6 +1,7 @@
 import {Button, theme} from 'antd';
 import {history} from "@@/core/history";
 import {Link} from "@umijs/max";
+import React from "react";
 
 /**
  * 每个单独的卡片，为了复用样式抽成了组件
