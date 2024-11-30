@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from "react";
 import {NAMESPACE_API, FIELD_API} from "@/services/management"
 import {MACHINE_API} from "@/services/app"
-import {Tabs, Spin, Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
+import {Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {doGetRequest, doPostRequest} from "@/util/http";
 import {history} from "@@/core/history";
 import {Loading} from "@/components"
 
 
 const ManagementPage = () => {
-    const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
-    const [fieldList, setFieldList] = useState<Field[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [showModalIndex, setShowModalIndex] = useState(0)
 
-    const [machineList, setMachineList] = useState<Machine[]>([]);
-    const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>([]);
-    const [fieldValue, setFieldValue] = useState<FieldValue>();
-    const [machineFieldValue, setMachineFieldValue] = useState<MachineFieldValue[]>([]);
+    const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
+    const [fieldList, setFieldList] = useState<Field[]>([]);
+    const [showModalIndex, setShowModalIndex] = useState(0);
+
     const [conditionForm] = Form.useForm();
     const [pushForm] = Form.useForm();
     const [fieldValueForm] = Form.useForm();
+
     const [pageIndex, setPageIndex] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [total, setTotal] = useState(0);
@@ -60,29 +58,26 @@ const ManagementPage = () => {
     };
 
     const handlePushClick = (fieldId: string) => {
-        const field = fieldList.find(value => value.id === fieldId)
+        const field = fieldList.find(value => value.id === fieldId);
         pushForm.setFieldsValue({
-            id: field?.id,
-            fieldName: field?.name,
-            className: field?.className,
-            namespace: field?.namespace,
-            fieldDescription: field?.description,
+            ...field,
             pushType: "all",
             isUpdateTemplate: true
-        })
+        });
         doGetRequest(MACHINE_API.LIST, {}, {
             onSuccess: (res) => {
                 res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port});
-                setMachineList(res.data);
+                pushForm.setFieldValue("machineList", res.data);
             },
             onFinally: () => setShowModalIndex(1)
         });
+
     };
 
     const handleDistributionClick = (fieldId: string) => {
         doGetRequest(FIELD_API.GET, {fieldId}, {
             onSuccess: (res: any) => {
-                setFieldValue(res.data);
+                fieldValueForm.setFieldsValue(res.data);
                 const machineValueList: MachineFieldValue[] = [];
                 const machineValueMap: { [key: string]: string } = res.data.machineValueMap;
                 Object.entries(machineValueMap).forEach(([key, value]: [string, string]) => {
@@ -95,7 +90,7 @@ const ManagementPage = () => {
                         });
                     }
                 });
-                setMachineFieldValue(machineValueList);
+                fieldValueForm.setFieldValue("machineValueList", machineValueList);
             },
             onFinally: () => setShowModalIndex(2)
         });
@@ -106,7 +101,7 @@ const ManagementPage = () => {
         const fieldName = field.name;
         const namespaceId = field.namespaceId;
         history.push({
-            pathname: '/management/log?namespace=',
+            pathname: '/management/log',
         }, {
             namespace, fieldName, namespaceId
         });
@@ -117,18 +112,18 @@ const ManagementPage = () => {
         const namespace = pushForm.getFieldValue("namespace")
         const value = pushForm.getFieldValue("fieldValue");
         const pushType = pushForm.getFieldValue("pushType");
-        const machineIds = selectedMachineIds.join(',');
+        const machines = pushForm.getFieldValue("selectedMachines")?.join(',');
         const isUpdateTemplate = pushForm.getFieldValue("isUpdateTemplate");
 
-        doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machineIds}, {
+        doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machines, isUpdateTemplate}, {
             onSuccess: _ => message.success("推送成功").then(_ => {}),
             onFinally: () => handleModalClose()
         });
     }
 
     const handleModalClose = () => {
-        pushForm.resetFields(); // 重置表单字段
-        fieldValueForm.resetFields(); // 重置表单字段
+        pushForm.resetFields();
+        fieldValueForm.resetFields();
         setShowModalIndex(0);
     };
 
@@ -170,30 +165,6 @@ const ManagementPage = () => {
             width: '25%', // 设置列宽为30%
         },
     ];
-
-    const machineFieldValueColumns = [
-        {
-            title: 'ip地址',
-            dataIndex: 'ipAddress',
-            key: 'ipAddress'
-        },
-        {
-            title: '端口号',
-            dataIndex: 'port',
-            key: 'port'
-        },
-        {
-            title: '字段值',
-            dataIndex: 'value',
-            key: 'value'
-        },
-    ]
-
-    const handleMachineChange = (_:any, chooseMachines:any) => {
-        const ids: string[] = [];
-        chooseMachines.forEach((machine: any) => ids.push(machine.id))
-        setSelectedMachineIds(ids)
-    };
 
     return (
         <div>
@@ -267,8 +238,8 @@ const ManagementPage = () => {
                     form={pushForm}
                     style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}
                 >
-                    <Form.Item name="fieldName" label="变量名">
-                        {pushForm.getFieldValue("fieldName")}
+                    <Form.Item name="name" label="变量名">
+                        {pushForm.getFieldValue("name")}
                     </Form.Item>
                     <Form.Item name="className" label="全类名">
                         {pushForm.getFieldValue("className")}
@@ -276,8 +247,8 @@ const ManagementPage = () => {
                     <Form.Item name="namespace" label="命名空间">
                         {pushForm.getFieldValue("namespace")}
                     </Form.Item>
-                    <Form.Item name="fieldDescription" label="变量描述">
-                        {pushForm.getFieldValue("fieldDescription")}
+                    <Form.Item name="description" label="变量描述">
+                        {pushForm.getFieldValue("description")}
                     </Form.Item>
                     <Form.Item name="fieldValue" label="变量值">
                         <Input.TextArea value={pushForm.getFieldValue("fieldValue")} onChange={(e) => pushForm.setFieldValue("fieldValue", e.target.value)} rows={4}/>
@@ -299,8 +270,7 @@ const ManagementPage = () => {
                                         mode="multiple"
                                         placeholder="请选择要变更字段值的机器"
                                         allowClear
-                                        options={machineList}
-                                        onChange={handleMachineChange}
+                                        options={pushForm.getFieldValue("machineList")}
                                         notFoundContent={"暂无机器"}
                                     >
                                     </Select>
@@ -337,20 +307,38 @@ const ManagementPage = () => {
                     form={fieldValueForm}
                     style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
                 >
-                    <Form.Item name="fieldName" label="变量名">
-                        {fieldValue?.name}
+                    <Form.Item name="name" label="变量名">
+                        {fieldValueForm.getFieldValue("name")}
                     </Form.Item>
                     <Form.Item name="className" label="全类名">
-                        {fieldValue?.className}
+                        {fieldValueForm.getFieldValue("className")}
                     </Form.Item>
                     <Form.Item name="namespace" label="命名空间">
-                        {fieldValue?.namespace}
+                        {fieldValueForm.getFieldValue("namespace")}
                     </Form.Item>
                     <Form.Item name="description" label="变量描述">
-                        {fieldValue?.description}
+                        {fieldValueForm.getFieldValue("description")}
                     </Form.Item>
                     <Form.Item name="fieldValue" label="变量值">
-                        <Table dataSource={machineFieldValue} columns={machineFieldValueColumns}/>
+                        <Table dataSource={fieldValueForm.getFieldValue("machineValueList")} columns={
+                            [
+                                {
+                                    title: 'ip地址',
+                                    dataIndex: 'ipAddress',
+                                    key: 'ipAddress'
+                                },
+                                {
+                                    title: '端口号',
+                                    dataIndex: 'port',
+                                    key: 'port'
+                                },
+                                {
+                                    title: '字段值',
+                                    dataIndex: 'value',
+                                    key: 'value'
+                                },
+                            ]
+                        }/>
                     </Form.Item>
                 </Form>
             </Modal>
