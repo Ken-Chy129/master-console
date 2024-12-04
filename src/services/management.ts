@@ -13,4 +13,8 @@ enum LOG_API {
     PAGE_BY_CONDITION = '/api/management/log/selectByCondition',
 }
 
-export {NAMESPACE_API, FIELD_API, LOG_API}
+enum TEMPLATE_API {
+    LIST_BY_APPID = '/api/management/template/selectByAppId'
+}
+
+export {NAMESPACE_API, FIELD_API, LOG_API, TEMPLATE_API}
