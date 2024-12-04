@@ -14,7 +14,8 @@ enum LOG_API {
 }
 
 enum TEMPLATE_API {
-    LIST_BY_APPID = '/api/management/template/selectByAppId'
+    LIST_BY_APPID = '/api/management/template/selectByAppId',
+    PAGE_FIELD_BY_CONDITION = '/api/management/template/selectFieldPageByCondition',
 }
 
 export {NAMESPACE_API, FIELD_API, LOG_API, TEMPLATE_API}
