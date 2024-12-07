@@ -72,9 +72,10 @@ export const FieldSelect: React.FC<{
 }
 
 export const MachineSelect: React.FC<{
+    mode?: 'multiple' | 'tags',
     form: FormInstance,
     onChange?: (value: any) => void}
-> = ({form, onChange}) => {
+> = ({mode, form, onChange}) => {
     const [machineList, setMachineList] = useState<[]>([]);
 
     useEffect(() => {
@@ -92,8 +93,9 @@ export const MachineSelect: React.FC<{
 
     return (
         <Select
-            placeholder="请选择要变更字段值的机器"
+            placeholder="请选择目标机器"
             allowClear
+            mode={mode}
             style={{width: "90%"}}
             options={machineList}
             value={form.getFieldValue("machines")}

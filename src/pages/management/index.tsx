@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {FIELD_API} from "@/services/management"
-import {MACHINE_API} from "@/services/app"
-import {Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
+import {Table, Button, Modal, Form, Input, Space, Radio, message, Row, Col} from "antd";
 import {doGetRequest, doPostRequest} from "@/util/http";
 import {history} from "@@/core/history";
-import {Loading, NamespaceSelect} from "@/components"
+import {Loading, MachineSelect, NamespaceSelect} from "@/components"
 
 
 const ManagementPage = () => {
@@ -53,14 +52,7 @@ const ManagementPage = () => {
             pushType: "all",
             isUpdateTemplate: true
         });
-        doGetRequest(MACHINE_API.LIST, {}, {
-            onSuccess: (res) => {
-                res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port});
-                pushForm.setFieldValue("machineList", res.data);
-            },
-            onFinally: () => setShowModalIndex(1)
-        });
-
+        setShowModalIndex(1);
     };
 
     const handleDistributionClick = (fieldId: string) => {
@@ -100,7 +92,7 @@ const ManagementPage = () => {
         const namespace = pushForm.getFieldValue("namespace")
         const value = pushForm.getFieldValue("fieldValue");
         const pushType = pushForm.getFieldValue("pushType");
-        const machines = pushForm.getFieldValue("selectedMachines")?.join(',');
+        const machines = pushForm.getFieldValue("machines")?.join(',');
         const isUpdateTemplate = pushForm.getFieldValue("isUpdateTemplate");
 
         doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machines, isUpdateTemplate}, {
@@ -247,15 +239,8 @@ const ManagementPage = () => {
                     >
                         {({getFieldValue}) => {
                             return getFieldValue('pushType') === 'specific' ? (
-                                <Form.Item name="selectedMachines" label="推送机器">
-                                    <Select
-                                        mode="multiple"
-                                        placeholder="请选择要变更字段值的机器"
-                                        allowClear
-                                        options={pushForm.getFieldValue("machineList")}
-                                        notFoundContent={"暂无机器"}
-                                    >
-                                    </Select>
+                                <Form.Item name="machines" label="推送机器">
+                                    <MachineSelect mode="multiple" form={pushForm}/>
                                 </Form.Item>
                             ) : null
                         }}
