@@ -1,10 +1,13 @@
-import {Select} from "antd";
+import {Form, FormInstance, Select} from "antd";
 import React, {useEffect, useState} from "react";
 import {doGetRequest} from "@/util/http";
 import {FIELD_API, NAMESPACE_API} from "@/services/management";
 import {MACHINE_API} from "@/services/app";
 
-export const NamespaceSelect: React.FC<{onChange: (value: any) => void}> = ({onChange}) => {
+export const NamespaceSelect: React.FC<{
+    defaultValue?: number,
+    onChange?: (value: any) => void
+}> = ({defaultValue, onChange}) => {
     const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
 
     useEffect(() => {
@@ -22,6 +25,7 @@ export const NamespaceSelect: React.FC<{onChange: (value: any) => void}> = ({onC
 
     return (
         <Select
+            defaultValue={defaultValue}
             placeholder="请选择命名空间"
             allowClear
             style={{width: "90%"}}
@@ -32,10 +36,15 @@ export const NamespaceSelect: React.FC<{onChange: (value: any) => void}> = ({onC
     )
 }
 
-export const FieldSelect: React.FC<{namespaceId: string}> = ({namespaceId}) => {
+export const FieldSelect: React.FC<{
+    namespaceId: number,
+    defaultValue?: number,
+    onChange?: (value: any) => void
+}> = ({namespaceId, defaultValue, onChange}) => {
     const [fieldList, setFieldList] = useState<Field[]>([]);
 
     useEffect(() => {
+        console.log(namespaceId);
         if (namespaceId) {
             queryNamespaceField();
         }
@@ -52,10 +61,12 @@ export const FieldSelect: React.FC<{namespaceId: string}> = ({namespaceId}) => {
 
     return (
         <Select
+            defaultValue={defaultValue}
             placeholder="请选择字段"
             allowClear
             style={{width: "90%"}}
             options={fieldList}
+            onChange={onChange}
             notFoundContent={"该命名空间下暂无字段"}
         />
     )

@@ -6,7 +6,7 @@ import {FieldSelect, NamespaceSelect} from "@/components";
 
 const TemplatePage = () => {
     const [form] = Form.useForm();
-    const [selectNamespaceId, setSelectNamespaceId] = useState<string>();
+    const namespaceId = Form.useWatch("namespace", form);
     const [templateList, setTemplateList] = useState<Template[]>([]);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
     const [templateFieldList, setTemplateFieldList] = useState<[]>([]);
@@ -86,18 +86,34 @@ const TemplatePage = () => {
                 <Tabs.TabPane tab={<Tooltip title={template.description}>{template.label}</Tooltip>} key={template.key}/>
             ))}
         </Tabs>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <Form form={form}>
-                <Row>
+        <Form form={form}>
+            <Row>
+                <Col span={4}>
                     <Form.Item name="namespace" label="命名空间">
-                        <NamespaceSelect onChange={(value) => setSelectNamespaceId(value)}/>
+                        <NamespaceSelect/>
                     </Form.Item>
+                </Col>
+                <Col span={4}>
                     <Form.Item name="fieldName" label="字段名">
-                        <FieldSelect namespaceId={selectNamespaceId!}/>
+                        <FieldSelect namespaceId={namespaceId}/>
                     </Form.Item>
-                </Row>
-            </Form>
-        </div>
+                </Col>
+                <Col span={4}>
+                    <Form.Item style={{marginLeft: 30}}>
+                        <Button type="primary" htmlType="submit">
+                            查询
+                        </Button>
+                    </Form.Item>
+                </Col>
+                <Col span={4}>
+                    <Form.Item style={{marginLeft: 30}}>
+                        <Button type="primary" htmlType="reset" onClick={() => form.resetFields()}>
+                            重置
+                        </Button>
+                    </Form.Item>
+                </Col>
+            </Row>
+        </Form>
         <Table
             columns={columns}
             dataSource={templateFieldList}
