@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {NAMESPACE_API, FIELD_API} from "@/services/management"
+import {FIELD_API} from "@/services/management"
 import {MACHINE_API} from "@/services/app"
 import {Table, Button, Modal, Form, Input, Select, Space, Radio, message, Row, Col} from "antd";
 import {doGetRequest, doPostRequest} from "@/util/http";
 import {history} from "@@/core/history";
-import {Loading} from "@/components"
+import {Loading, NamespaceSelect} from "@/components"
 
 
 const ManagementPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
     const [fieldList, setFieldList] = useState<Field[]>([]);
     const [showModalIndex, setShowModalIndex] = useState(0);
 
@@ -26,7 +25,6 @@ const ManagementPage = () => {
     useEffect(() => {
         setLoading(true);
         setError(null);
-        queryNamespace();
         queryManagementField();
         setLoading(false);
     }, []);
@@ -37,17 +35,8 @@ const ManagementPage = () => {
         setLoading(false);
     }, [pageIndex, pageSize]);
 
-    const queryNamespace = () => {
-        doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, {
-            onSuccess: (res: any) => {
-                res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
-                setNamespaceList(res.data);
-            }
-        });
-    }
-
     const queryManagementField = () => {
-        const namespaceId = conditionForm.getFieldValue("namespace");
+        const namespaceId = conditionForm.getFieldValue("namespaceId");
         const fieldName = conditionForm.getFieldValue("fieldName");
         doGetRequest(FIELD_API.PAGE_BY_CONDITION, {namespaceId, fieldName, pageIndex, pageSize}, {
             onSuccess: (res: any) => {
@@ -172,14 +161,8 @@ const ManagementPage = () => {
                     <Form form={conditionForm}>
                         <Row>
                             <Col span={4}>
-                                <Form.Item name="namespace" label="命名空间">
-                                    <Select
-                                        placeholder="请选择命名空间"
-                                        allowClear
-                                        style={{width: "90%"}}
-                                        options={namespaceList}
-                                        notFoundContent={"暂无命名空间"}
-                                    />
+                                <Form.Item name="namespaceId" label="命名空间">
+                                    <NamespaceSelect form={conditionForm}/>
                                 </Form.Item>
                             </Col>
                             <Col span={4}>
