@@ -64,13 +64,17 @@ export const FieldSelect: React.FC<{
             allowClear
             style={{width: "90%"}}
             options={fieldList}
+            value={form.getFieldValue("fieldName")}
             onChange={onChange}
             notFoundContent={"该命名空间下暂无字段"}
         />
     )
 }
 
-export const MachineSelect: React.FC<{onChange: (value: any) => void}> = ({onChange}) => {
+export const MachineSelect: React.FC<{
+    form: FormInstance,
+    onChange?: (value: any) => void}
+> = ({form, onChange}) => {
     const [machineList, setMachineList] = useState<[]>([]);
 
     useEffect(() => {
@@ -92,6 +96,7 @@ export const MachineSelect: React.FC<{onChange: (value: any) => void}> = ({onCha
             allowClear
             style={{width: "90%"}}
             options={machineList}
+            value={form.getFieldValue("machines")}
             onChange={onChange}
             notFoundContent={"暂无机器"}
         />

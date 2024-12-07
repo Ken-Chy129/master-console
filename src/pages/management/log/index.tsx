@@ -1,11 +1,8 @@
-import {Button, Col, Form, Input, message, Pagination, Radio, Row, Select, Table} from "antd";
+import {Button, Col, Form, Input, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {FIELD_API, LOG_API} from "@/services/management";
+import {LOG_API} from "@/services/management";
 import {doGetRequest} from "@/util/http"
-import {NAMESPACE_API} from "@/services/management"
-import {getMachineList} from "@/services/common";
-import {MACHINE_API} from "@/services/app";
-import {NamespaceSelect} from "@/components";
+import {FieldSelect, MachineSelect, NamespaceSelect} from "@/components";
 
 const ManagementLogPage = () => {
 
@@ -65,8 +62,6 @@ const ManagementLogPage = () => {
     ];
 
     const [managementLog, setManagementLog] = useState<[]>([]);
-    const [machineList, setMachineList] = useState<[]>([]);
-    const [fieldList, setFieldList] = useState<[]>([]);
     const [form] = Form.useForm();
     const [pageIndex, setPageIndex] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -75,10 +70,9 @@ const ManagementLogPage = () => {
     useEffect(() => {
         if (history.state.usr) {
             form.setFieldValue("namespaceId", history.state.usr.namespaceId);
-            form.setFieldValue("name", history.state.usr.fieldName);
+            form.setFieldValue("fieldName", history.state.usr.fieldName);
         }
         queryManagementLog();
-        queryMachineList();
     }, []);
 
     useEffect(() => {
@@ -91,7 +85,7 @@ const ManagementLogPage = () => {
 
     const queryManagementLog = () => {
         const namespaceId = form.getFieldValue("namespaceId");
-        const name = form.getFieldValue("name");
+        const name = form.getFieldValue("fieldName");
         const machines = form.getFieldValue("machines");
         const modifier = form.getFieldValue("modifier");
         doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespaceId, name, machines, modifier, pageIndex, pageSize}, {
@@ -102,32 +96,6 @@ const ManagementLogPage = () => {
         });
     }
 
-    const queryMachineList = () => {
-        doGetRequest(MACHINE_API.LIST, {}, {
-            onSuccess: (res: any) => {
-                res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port});
-                setMachineList(res.data);
-            }
-        });
-    }
-
-    const queryNamespaceField = (namespaceId: string) => {
-        doGetRequest(FIELD_API.LIST_BY_NAMESPACE_ID, {namespaceId}, {
-            onSuccess: (res: any) => {
-                res.data.forEach((field: any) => {field.label = field.name; field.value = field.name});
-                setFieldList(res.data);
-            }
-        });
-    }
-
-    const handleNamespaceChange = (_:any, selectedNamespace:any) => {
-        if (selectedNamespace === null || selectedNamespace === undefined) {
-            return;
-        }
-        const namespaceId = selectedNamespace?.id;
-        queryNamespaceField(namespaceId);
-    };
-
     return <>
         <Form form={form}>
             <Row>
@@ -137,25 +105,13 @@ const ManagementLogPage = () => {
                     </Form.Item>
                 </Col>
                 <Col span={4}>
-                    <Form.Item name="name" label="字段名">
-                        <Select
-                            placeholder="请选择字段"
-                            allowClear
-                            style={{width: "90%"}}
-                            options={fieldList}
-                            notFoundContent={"该命名空间下暂无字段"}
-                        />
+                    <Form.Item name="fieldName" label="字段名">
+                        <FieldSelect form={form}/>
                     </Form.Item>
                 </Col>
                 <Col span={4}>
                     <Form.Item name="machines" label="机器列表">
-                        <Select
-                            placeholder="请选择要变更字段值的机器"
-                            allowClear
-                            style={{width: "90%"}}
-                            options={machineList}
-                            notFoundContent={"暂无机器"}
-                        />
+                        <MachineSelect form={form}/>
                     </Form.Item>
                 </Col>
                 <Col span={4}>
