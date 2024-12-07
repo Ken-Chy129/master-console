@@ -1,9 +1,12 @@
-import {Button, Table, Tabs} from "antd";
+import {Button, Col, Form, Input, Row, Select, Table, Tabs, Tooltip} from "antd";
 import React, {useEffect, useState} from "react";
 import {doGetRequest} from "@/util/http";
 import {TEMPLATE_API} from "@/services/management";
+import {FieldSelect, NamespaceSelect} from "@/components";
 
 const TemplatePage = () => {
+    const [form] = Form.useForm();
+    const [selectNamespaceId, setSelectNamespaceId] = useState<string>();
     const [templateList, setTemplateList] = useState<Template[]>([]);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
     const [templateFieldList, setTemplateFieldList] = useState<[]>([]);
@@ -49,30 +52,51 @@ const TemplatePage = () => {
             title: '命名空间',
             dataIndex: 'namespace',
             key: 'namespace',
-            width: '20%'
+            width: '25%'
         },
         {
             title: '字段名',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'fieldName',
+            key: 'fieldName',
             width: '20%', // 设置列宽为30%
         },
         {
-            title: '描述',
-            dataIndex: 'description',
-            key: 'description',
-            width: '35%', // 设置列宽为30%
+            title: '字段值',
+            dataIndex: 'fieldValue',
+            key: 'fieldValue',
+            width: '30%', // 设置列宽为30%
+        },
+        {
+            title: '操作',
+            key: 'action',
+            render: (text: string, field: Field) => (
+                <span>
+                  <Button type="primary" onClick={() => (field.id)}>
+                    修改
+                  </Button>
+                </span>
+            ),
+            width: '25%', // 设置列宽为30%
         }
     ];
 
     return <>
-        <Tabs items={templateList} onChange={(key) => setSelectedTemplateId(key as string)}/>
+        <Tabs onChange={(key) => setSelectedTemplateId(key as string)}>
+            {templateList.map(template => (
+                <Tabs.TabPane tab={<Tooltip title={template.description}>{template.label}</Tooltip>} key={template.key}/>
+            ))}
+        </Tabs>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <span>{templateList!.find(template => template.id === selectedTemplateId)?.description}</span>
-            <div style={{display: 'flex', gap: '8px'}}>
-                <Button type="primary">推送</Button>
-                <Button type="primary">查看分布</Button>
-            </div>
+            <Form form={form}>
+                <Row>
+                    <Form.Item name="namespace" label="命名空间">
+                        <NamespaceSelect onChange={(value) => setSelectNamespaceId(value)}/>
+                    </Form.Item>
+                    <Form.Item name="fieldName" label="字段名">
+                        <FieldSelect namespaceId={selectNamespaceId!}/>
+                    </Form.Item>
+                </Row>
+            </Form>
         </div>
         <Table
             columns={columns}

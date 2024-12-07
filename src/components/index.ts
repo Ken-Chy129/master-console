@@ -6,9 +6,10 @@
  * 布局组件
  */
 import {Loading} from "./Common/Loading";
+import {NamespaceSelect, FieldSelect, MachineSelect} from "@/components/CustomSelect";
 import InfoCard from './Card';
 import Footer from './Footer';
 import { Question, SelectLang } from './RightContent';
 import { AvatarDropdown, AvatarName } from './RightContent/AvatarDropdown';
 
-export { Loading, Footer, Question, SelectLang, AvatarDropdown, AvatarName, InfoCard };
+export { Loading, Footer, Question, SelectLang, AvatarDropdown, AvatarName, InfoCard, NamespaceSelect, FieldSelect, MachineSelect };

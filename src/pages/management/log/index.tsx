@@ -4,6 +4,7 @@ import {FIELD_API, LOG_API} from "@/services/management";
 import {doGetRequest} from "@/util/http"
 import {NAMESPACE_API} from "@/services/management"
 import {getMachineList} from "@/services/common";
+import {MACHINE_API} from "@/services/app";
 
 const ManagementLogPage = () => {
 
@@ -115,13 +116,12 @@ const ManagementLogPage = () => {
     }
 
     const queryMachineList = () => {
-        getMachineList({appId})
-            .then((res: any) => {
-                if (res.success === true) {
-                    res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port});
-                    setMachineList(res.data);
-                }
-            });
+        doGetRequest(MACHINE_API.LIST, {}, {
+            onSuccess: (res: any) => {
+                res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port});
+                setMachineList(res.data);
+            }
+        });
     }
 
     const queryNamespaceField = (namespaceId: string) => {
