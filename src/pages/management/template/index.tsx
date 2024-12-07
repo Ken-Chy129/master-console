@@ -4,8 +4,8 @@ import {doGetRequest} from "@/util/http";
 import {TEMPLATE_API} from "@/services/management";
 
 const TemplatePage = () => {
-    const [templateList, setTemplateList] = useState<[]>([]);
-    const [selectedTemplateId, setSelectedTemplateId] = useState<number>();
+    const [templateList, setTemplateList] = useState<Template[]>([]);
+    const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
     const [templateFieldList, setTemplateFieldList] = useState<[]>([]);
 
     const [pageIndex, setPageIndex] = useState(1);
@@ -30,7 +30,7 @@ const TemplatePage = () => {
         });
     }
 
-    const queryTemplateFieldList = (templateId: number, pageIndex: number, pageSize: number) => {
+    const queryTemplateFieldList = (templateId: string, pageIndex: number, pageSize: number) => {
         doGetRequest(TEMPLATE_API.PAGE_FIELD_BY_CONDITION, {templateId, pageIndex, pageSize}, {
             onSuccess: res => {
                 console.log(res.data);
@@ -66,15 +66,14 @@ const TemplatePage = () => {
     ];
 
     return <>
-        <Tabs items={templateList} onChange={(key) => setSelectedTemplateId(key as unknown as number)}/>
-        <span>
-            <Button type="primary">
-                推送
-            </Button>
-            <Button type="primary" style={{marginLeft: 8}}>
-                查看分布
-            </Button>
-        </span>
+        <Tabs items={templateList} onChange={(key) => setSelectedTemplateId(key as string)}/>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <span>{templateList!.find(template => template.id === selectedTemplateId)?.description}</span>
+            <div style={{display: 'flex', gap: '8px'}}>
+                <Button type="primary">推送</Button>
+                <Button type="primary">查看分布</Button>
+            </div>
+        </div>
         <Table
             columns={columns}
             dataSource={templateFieldList}

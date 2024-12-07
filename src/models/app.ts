@@ -42,3 +42,11 @@ type MachineFieldValue = {
     port: string;
     value: string;
 }
+
+type Template = {
+    id: string;
+    name: string;
+    description?: string;
+    key: string;
+    label: string;
+}
