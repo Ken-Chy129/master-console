@@ -6,7 +6,6 @@ import {FieldSelect, NamespaceSelect} from "@/components";
 
 const TemplatePage = () => {
     const [form] = Form.useForm();
-    const namespaceId = Form.useWatch("namespace", form);
     const [templateList, setTemplateList] = useState<Template[]>([]);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
     const [templateFieldList, setTemplateFieldList] = useState<[]>([]);
@@ -89,13 +88,13 @@ const TemplatePage = () => {
         <Form form={form}>
             <Row>
                 <Col span={4}>
-                    <Form.Item name="namespace" label="命名空间">
-                        <NamespaceSelect/>
+                    <Form.Item name="namespaceId" label="命名空间">
+                        <NamespaceSelect form={form}/>
                     </Form.Item>
                 </Col>
                 <Col span={4}>
                     <Form.Item name="fieldName" label="字段名">
-                        <FieldSelect namespaceId={namespaceId}/>
+                        <FieldSelect form={form}/>
                     </Form.Item>
                 </Col>
                 <Col span={4}>

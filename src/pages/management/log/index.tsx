@@ -5,6 +5,7 @@ import {doGetRequest} from "@/util/http"
 import {NAMESPACE_API} from "@/services/management"
 import {getMachineList} from "@/services/common";
 import {MACHINE_API} from "@/services/app";
+import {NamespaceSelect} from "@/components";
 
 const ManagementLogPage = () => {
 
@@ -63,9 +64,7 @@ const ManagementLogPage = () => {
         },
     ];
 
-    const appId = localStorage.getItem("appId")!;
     const [managementLog, setManagementLog] = useState<[]>([]);
-    const [namespaceList, setNamespaceList] = useState<[]>([]);
     const [machineList, setMachineList] = useState<[]>([]);
     const [fieldList, setFieldList] = useState<[]>([]);
     const [form] = Form.useForm();
@@ -75,13 +74,10 @@ const ManagementLogPage = () => {
 
     useEffect(() => {
         if (history.state.usr) {
-            form.setFieldValue("namespace", history.state.usr.namespace);
+            form.setFieldValue("namespaceId", history.state.usr.namespaceId);
             form.setFieldValue("name", history.state.usr.fieldName);
-            const namespaceId = history.state.usr.namespaceId;
-            queryNamespaceField(namespaceId);
         }
         queryManagementLog();
-        queryNamespace();
         queryMachineList();
     }, []);
 
@@ -93,21 +89,12 @@ const ManagementLogPage = () => {
         form.resetFields();
     }
 
-    const queryNamespace = () => {
-        doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, {
-            onSuccess: (res: any) => {
-                res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.name});
-                setNamespaceList(res.data);
-            }
-        });
-    }
-
     const queryManagementLog = () => {
-        const namespace = form.getFieldValue("namespace");
+        const namespaceId = form.getFieldValue("namespaceId");
         const name = form.getFieldValue("name");
         const machines = form.getFieldValue("machines");
         const modifier = form.getFieldValue("modifier");
-        doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespace, name, machines, modifier, pageIndex, pageSize}, {
+        doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespaceId, name, machines, modifier, pageIndex, pageSize}, {
             onSuccess:  (res: any) => {
                 setTotal(res.total);
                 setManagementLog(res.data);
@@ -145,15 +132,8 @@ const ManagementLogPage = () => {
         <Form form={form}>
             <Row>
                 <Col span={4}>
-                    <Form.Item name="namespace" label="命名空间">
-                        <Select
-                            placeholder="请选择命名空间"
-                            allowClear
-                            style={{width: "90%"}}
-                            options={namespaceList}
-                            notFoundContent={"暂无命名空间"}
-                            onChange={handleNamespaceChange}
-                        />
+                    <Form.Item name="namespaceId" label="命名空间">
+                        <NamespaceSelect form={form}/>
                     </Form.Item>
                 </Col>
                 <Col span={4}>

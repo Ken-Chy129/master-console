@@ -5,9 +5,9 @@ import {FIELD_API, NAMESPACE_API} from "@/services/management";
 import {MACHINE_API} from "@/services/app";
 
 export const NamespaceSelect: React.FC<{
-    defaultValue?: number,
+    form: FormInstance
     onChange?: (value: any) => void
-}> = ({defaultValue, onChange}) => {
+}> = ({form, onChange}) => {
     const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
 
     useEffect(() => {
@@ -25,11 +25,11 @@ export const NamespaceSelect: React.FC<{
 
     return (
         <Select
-            defaultValue={defaultValue}
             placeholder="请选择命名空间"
             allowClear
             style={{width: "90%"}}
             options={namespaceList}
+            value={form.getFieldValue("namespaceId")}
             onChange={onChange}
             notFoundContent={"暂无命名空间"}
         />
@@ -37,14 +37,13 @@ export const NamespaceSelect: React.FC<{
 }
 
 export const FieldSelect: React.FC<{
-    namespaceId: number,
-    defaultValue?: number,
+    form: FormInstance,
     onChange?: (value: any) => void
-}> = ({namespaceId, defaultValue, onChange}) => {
+}> = ({form, onChange}) => {
     const [fieldList, setFieldList] = useState<Field[]>([]);
+    const namespaceId = Form.useWatch("namespaceId", form);
 
     useEffect(() => {
-        console.log(namespaceId);
         if (namespaceId) {
             queryNamespaceField();
         }
@@ -61,7 +60,6 @@ export const FieldSelect: React.FC<{
 
     return (
         <Select
-            defaultValue={defaultValue}
             placeholder="请选择字段"
             allowClear
             style={{width: "90%"}}
