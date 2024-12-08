@@ -1,4 +1,4 @@
-import {Button, Col, Form, Input, Row, Select, Table, Tabs, Tooltip} from "antd";
+import {Button, Col, Form, Input, Modal, Row, Space, Table, Tabs, Tooltip} from "antd";
 import React, {useEffect, useState} from "react";
 import {doGetRequest} from "@/util/http";
 import {TEMPLATE_API} from "@/services/management";
@@ -6,9 +6,13 @@ import {FieldSelect, NamespaceSelect} from "@/components";
 
 const TemplatePage = () => {
     const [form] = Form.useForm();
+    const [modifiedModalForm] = Form.useForm();
+
     const [templateList, setTemplateList] = useState<Template[]>([]);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
     const [templateFieldList, setTemplateFieldList] = useState<[]>([]);
+
+    const [showModifiedModal, setShowModifiedModal] = useState<boolean>(false);
 
     const [pageIndex, setPageIndex] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -46,6 +50,22 @@ const TemplatePage = () => {
         console.log(e);
     }
 
+
+    const handleModalClose = () => {
+        modifiedModalForm.resetFields();
+        setShowModifiedModal(false);
+    }
+
+    const handleOpenModifiedModal = (templateFieldId: string) => {
+        console.log(templateFieldId);
+        setShowModifiedModal(true);
+
+    }
+
+    const handleUpdateTemplateField = () => {
+        handleModalClose();
+    }
+
     const columns = [
         {
             title: '命名空间',
@@ -68,9 +88,9 @@ const TemplatePage = () => {
         {
             title: '操作',
             key: 'action',
-            render: (text: string, field: Field) => (
+            render: (text: string, templateField: {id: string}) => (
                 <span>
-                  <Button type="primary" onClick={() => (field.id)}>
+                  <Button type="primary" onClick={() => handleOpenModifiedModal(templateField.id)}>
                     修改
                   </Button>
                 </span>
@@ -128,6 +148,28 @@ const TemplatePage = () => {
             }}
             rowKey="id"
         />
+        <Modal
+            title="修改"
+            open={showModifiedModal}
+            onOk={handleModalClose}
+            onCancel={handleModalClose}
+            footer={[
+                <Space>
+                    <Button key="push" onClick={handleUpdateTemplateField}>
+                        推送
+                    </Button>
+                    <Button key="close" onClick={handleModalClose}>
+                        关闭
+                    </Button>
+                </Space>
+            ]}
+        >
+            <Form form={modifiedModalForm} style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}>
+                <Form.Item name={"value"} label={"新值"}>
+                    <Input.TextArea/>
+                </Form.Item>
+            </Form>
+        </Modal>
     </>
 }
 
