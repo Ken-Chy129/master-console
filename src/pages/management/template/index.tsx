@@ -1,4 +1,4 @@
-import {Button, Col, Form, Input, message, Modal, Radio, Row, Space, Table, Tabs, Tooltip} from "antd";
+import {Button, Col, Form, Input, message, Modal, Radio, Row, Select, Space, Table, Tabs, Tooltip} from "antd";
 import React, {useEffect, useState} from "react";
 import {doGetRequest, doPostRequest} from "@/util/http";
 import {TEMPLATE_API} from "@/services/management";
@@ -7,6 +7,7 @@ import {FieldSelect, MachineSelect, NamespaceSelect} from "@/components";
 const TemplatePage = () => {
     const [conditionForm] = Form.useForm();
     const [modifiedModalForm] = Form.useForm();
+    const [newTemplateForm] = Form.useForm();
     const [pushForm] = Form.useForm();
 
     const [templateList, setTemplateList] = useState<Template[]>([]);
@@ -14,6 +15,8 @@ const TemplatePage = () => {
     const [templateFieldList, setTemplateFieldList] = useState<[]>([]);
 
     const [showModifiedModal, setShowModifiedModal] = useState<boolean>(false);
+    const [showNewTemplateModal, setShowNewTemplateModal] = useState<boolean>(false);
+    const [showPushModal, setShowPushModal] = useState<boolean>(false);
 
     const [pageIndex, setPageIndex] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -24,6 +27,7 @@ const TemplatePage = () => {
     }, []);
 
     useEffect(() => {
+        conditionForm.resetFields();
         queryTemplateFieldList();
     }, [selectedTemplateId, pageIndex, pageSize]);
 
@@ -51,7 +55,21 @@ const TemplatePage = () => {
 
     const handleModalClose = () => {
         modifiedModalForm.resetFields();
+        newTemplateForm.resetFields();
+        pushForm.resetFields();
         setShowModifiedModal(false);
+        setShowNewTemplateModal(false);
+        setShowPushModal(false);
+    }
+
+    const handleOpenNewTemplateModal = () => {
+        setShowNewTemplateModal(true);
+    }
+
+    const handlePushModal = (fieldId: string, fieldValue: string) => {
+        modifiedModalForm.setFieldValue("fieldId", fieldId);
+        modifiedModalForm.setFieldValue("fieldValue", fieldValue);
+        setShowPushModal(true);
     }
 
     const handleOpenModifiedModal = (templateFieldId: string) => {
@@ -69,6 +87,25 @@ const TemplatePage = () => {
                 message.success("推送成功").then(_ => {});
             }
         });
+    }
+
+    const handleNewTemplate = () => {
+        const name = newTemplateForm.getFieldValue("name");
+        const description = newTemplateForm.getFieldValue("description");
+        const fromTemplate = newTemplateForm.getFieldValue("fromTemplate");
+        doPostRequest("", {name, description, fromTemplate}, {
+            onSuccess: res => {}
+        })
+    }
+
+    const handleValuePush = () => {
+        const name = modifiedModalForm.getFieldValue("fieldId");
+        const fieldValue = modifiedModalForm.getFieldValue("fieldValue");
+        const pushType = pushForm.getFieldValue("pushType");
+        const machines = pushForm.getFieldValue("machines");
+        doPostRequest("", {name, fieldValue, pushType, machines}, {
+            onSuccess: res => {}
+        })
     }
 
     const columns = [
@@ -93,10 +130,13 @@ const TemplatePage = () => {
         {
             title: '操作',
             key: 'action',
-            render: (text: string, templateField: {id: string}) => (
+            render: (text: string, templateField: {id: string, fieldId: string, fieldValue: string}) => (
                 <span>
                   <Button type="primary" onClick={() => handleOpenModifiedModal(templateField.id)}>
                     修改
+                  </Button>
+                  <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handlePushModal(templateField.fieldId, templateField.fieldValue)}>
+                    推送
                   </Button>
                 </span>
             ),
@@ -133,6 +173,13 @@ const TemplatePage = () => {
                     <Form.Item style={{marginLeft: 30}}>
                         <Button type="primary" htmlType="reset" onClick={() => conditionForm.resetFields()}>
                             重置
+                        </Button>
+                    </Form.Item>
+                </Col>
+                <Col>
+                    <Form.Item style={{marginLeft: 30}}>
+                        <Button type="primary" htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                            新建模板
                         </Button>
                     </Form.Item>
                 </Col>
@@ -175,67 +222,75 @@ const TemplatePage = () => {
                 </Form.Item>
             </Form>
         </Modal>
-        {/*<Modal*/}
-        {/*    title="字段值推送"*/}
-        {/*    open={showModalIndex == 1}*/}
-        {/*    onOk={handleModalClose}*/}
-        {/*    onCancel={handleModalClose}*/}
-        {/*    footer={[*/}
-        {/*        <Space>*/}
-        {/*            <Button key="back" onClick={handleValuePush}>*/}
-        {/*                推送*/}
-        {/*            </Button>*/}
-        {/*            <Button key="back" onClick={handleModalClose}>*/}
-        {/*                关闭*/}
-        {/*            </Button>*/}
-        {/*        </Space>*/}
-        {/*    ]}*/}
-        {/*>*/}
-        {/*    <Form*/}
-        {/*        form={pushForm}*/}
-        {/*        style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}*/}
-        {/*    >*/}
-        {/*        <Form.Item name="name" label="变量名">*/}
-        {/*            {pushForm.getFieldValue("name")}*/}
-        {/*        </Form.Item>*/}
-        {/*        <Form.Item name="className" label="全类名">*/}
-        {/*            {pushForm.getFieldValue("className")}*/}
-        {/*        </Form.Item>*/}
-        {/*        <Form.Item name="namespace" label="命名空间">*/}
-        {/*            {pushForm.getFieldValue("namespace")}*/}
-        {/*        </Form.Item>*/}
-        {/*        <Form.Item name="description" label="变量描述">*/}
-        {/*            {pushForm.getFieldValue("description")}*/}
-        {/*        </Form.Item>*/}
-        {/*        <Form.Item name="fieldValue" label="变量值">*/}
-        {/*            <Input.TextArea value={pushForm.getFieldValue("fieldValue")} onChange={(e) => pushForm.setFieldValue("fieldValue", e.target.value)} rows={4}/>*/}
-        {/*        </Form.Item>*/}
-        {/*        <Form.Item name="pushType" label="推送方式">*/}
-        {/*            <Radio.Group value={pushForm.getFieldValue("pushType")}>*/}
-        {/*                <Radio value={"all"}>所有机器</Radio>*/}
-        {/*                <Radio value={"specific"}>指定机器</Radio>*/}
-        {/*            </Radio.Group>*/}
-        {/*        </Form.Item>*/}
-        {/*        <Form.Item*/}
-        {/*            noStyle*/}
-        {/*            shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}*/}
-        {/*        >*/}
-        {/*            {({getFieldValue}) => {*/}
-        {/*                return getFieldValue('pushType') === 'specific' ? (*/}
-        {/*                    <Form.Item name="machines" label="推送机器">*/}
-        {/*                        <MachineSelect mode="multiple" form={pushForm}/>*/}
-        {/*                    </Form.Item>*/}
-        {/*                ) : null*/}
-        {/*            }}*/}
-        {/*        </Form.Item>*/}
-        {/*        <Form.Item name="isUpdateTemplate" label="是否更新默认模板值">*/}
-        {/*            <Radio.Group value={pushForm.getFieldValue("isUpdateTemplate")}>*/}
-        {/*                <Radio value={true}>是</Radio>*/}
-        {/*                <Radio value={false}>否</Radio>*/}
-        {/*            </Radio.Group>*/}
-        {/*        </Form.Item>*/}
-        {/*    </Form>*/}
-        {/*</Modal>*/}
+        <Modal
+            title="新建模板"
+            open={showNewTemplateModal}
+            onOk={handleModalClose}
+            onCancel={handleModalClose}
+            footer={[
+                <Space>
+                    <Button key="save" onClick={handleNewTemplate}>
+                        保存
+                    </Button>
+                    <Button key="close" onClick={handleModalClose}>
+                        关闭
+                    </Button>
+                </Space>
+            ]}
+        >
+            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}}>
+                <Form.Item name={"name"} label={"模板名称"}>
+                    <Input/>
+                </Form.Item>
+                <Form.Item name={"description"} label={"模板描述"}>
+                    <Input.TextArea/>
+                </Form.Item>
+                <Form.Item name={"fromTemplate"} label={"复制自模板"}>
+                    <Select/>
+                </Form.Item>
+            </Form>
+        </Modal>
+        <Modal
+            title="模板值推送"
+            open={showPushModal}
+            onOk={handleModalClose}
+            onCancel={handleModalClose}
+            footer={[
+                <Space>
+                    <Button key="back" onClick={handleValuePush}>
+                        推送
+                    </Button>
+                    <Button key="back" onClick={handleModalClose}>
+                        关闭
+                    </Button>
+                </Space>
+            ]}
+        >
+            <Form
+                form={pushForm}
+                style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}
+            >
+                <Form.Item name="pushType" label="推送方式">
+                    <Radio.Group value={pushForm.getFieldValue("pushType")}>
+                        <Radio value={"all"}>所有机器</Radio>
+                        <Radio value={"specific"}>指定机器</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                <Form.Item
+                    noStyle
+                    shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}
+                >
+                    {({getFieldValue}) => {
+                        return getFieldValue('pushType') === 'specific' ? (
+                            <Form.Item name="machines" label="推送机器">
+                                <MachineSelect mode="multiple" form={pushForm}/>
+                            </Form.Item>
+                        ) : null
+                    }}
+                </Form.Item>
+            </Form>
+        </Modal>
+
     </>
 }
 
