@@ -1,12 +1,13 @@
-import {Button, Col, Form, Input, message, Modal, Row, Space, Table, Tabs, Tooltip} from "antd";
+import {Button, Col, Form, Input, message, Modal, Radio, Row, Space, Table, Tabs, Tooltip} from "antd";
 import React, {useEffect, useState} from "react";
 import {doGetRequest, doPostRequest} from "@/util/http";
 import {TEMPLATE_API} from "@/services/management";
-import {FieldSelect, NamespaceSelect} from "@/components";
+import {FieldSelect, MachineSelect, NamespaceSelect} from "@/components";
 
 const TemplatePage = () => {
-    const [form] = Form.useForm();
+    const [conditionForm] = Form.useForm();
     const [modifiedModalForm] = Form.useForm();
+    const [pushForm] = Form.useForm();
 
     const [templateList, setTemplateList] = useState<Template[]>([]);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
@@ -23,7 +24,7 @@ const TemplatePage = () => {
     }, []);
 
     useEffect(() => {
-        queryTemplateFieldList(selectedTemplateId!, pageIndex, pageSize);
+        queryTemplateFieldList();
     }, [selectedTemplateId, pageIndex, pageSize]);
 
     const queryTemplateList = () => {
@@ -36,8 +37,10 @@ const TemplatePage = () => {
         });
     }
 
-    const queryTemplateFieldList = (templateId: string, pageIndex: number, pageSize: number) => {
-        doGetRequest(TEMPLATE_API.PAGE_FIELD_BY_CONDITION, {templateId, pageIndex, pageSize}, {
+    const queryTemplateFieldList = () => {
+        const namespaceId = conditionForm.getFieldValue("namespaceId");
+        const fieldName = conditionForm.getFieldValue("fieldName");
+        doGetRequest(TEMPLATE_API.PAGE_FIELD_BY_CONDITION, {templateId: selectedTemplateId, namespaceId, fieldName, pageIndex, pageSize}, {
             onSuccess: res => {
                 console.log(res.data);
                 setTotal(res.total);
@@ -46,28 +49,26 @@ const TemplatePage = () => {
         });
     }
 
-    const changeTemplate = (e: any) => {
-        console.log(e);
-    }
-
-
     const handleModalClose = () => {
         modifiedModalForm.resetFields();
         setShowModifiedModal(false);
     }
 
     const handleOpenModifiedModal = (templateFieldId: string) => {
-        console.log(templateFieldId);
-        const fieldValue = modifiedModalForm.getFieldValue("value");
-        doPostRequest(TEMPLATE_API.UPDATE_FIELD, {id: templateFieldId, fieldValue}, {
-            onSuccess: _ => message.success("推送成功").then(_ => {})
-        });
+        modifiedModalForm.setFieldValue("templateFieldId", templateFieldId);
         setShowModifiedModal(true);
-
     }
 
     const handleUpdateTemplateField = () => {
-        handleModalClose();
+        const id = modifiedModalForm.getFieldValue("templateFieldId");
+        const fieldValue = modifiedModalForm.getFieldValue("value");
+        doPostRequest(TEMPLATE_API.UPDATE_FIELD, {id, fieldValue}, {
+            onSuccess: _ => {
+                queryTemplateFieldList();
+                handleModalClose();
+                message.success("推送成功").then(_ => {});
+            }
+        });
     }
 
     const columns = [
@@ -109,28 +110,28 @@ const TemplatePage = () => {
                 <Tabs.TabPane tab={<Tooltip title={template.description}>{template.label}</Tooltip>} key={template.key}/>
             ))}
         </Tabs>
-        <Form form={form}>
+        <Form form={conditionForm}>
             <Row>
                 <Col span={4}>
                     <Form.Item name="namespaceId" label="命名空间">
-                        <NamespaceSelect form={form}/>
+                        <NamespaceSelect form={conditionForm}/>
                     </Form.Item>
                 </Col>
                 <Col span={4}>
                     <Form.Item name="fieldName" label="字段名">
-                        <FieldSelect form={form}/>
+                        <FieldSelect form={conditionForm}/>
                     </Form.Item>
                 </Col>
-                <Col span={4}>
+                <Col>
                     <Form.Item style={{marginLeft: 30}}>
-                        <Button type="primary" htmlType="submit">
+                        <Button type="primary" htmlType="submit" onClick={queryTemplateFieldList}>
                             查询
                         </Button>
                     </Form.Item>
                 </Col>
-                <Col span={4}>
+                <Col>
                     <Form.Item style={{marginLeft: 30}}>
-                        <Button type="primary" htmlType="reset" onClick={() => form.resetFields()}>
+                        <Button type="primary" htmlType="reset" onClick={() => conditionForm.resetFields()}>
                             重置
                         </Button>
                     </Form.Item>
@@ -174,6 +175,67 @@ const TemplatePage = () => {
                 </Form.Item>
             </Form>
         </Modal>
+        {/*<Modal*/}
+        {/*    title="字段值推送"*/}
+        {/*    open={showModalIndex == 1}*/}
+        {/*    onOk={handleModalClose}*/}
+        {/*    onCancel={handleModalClose}*/}
+        {/*    footer={[*/}
+        {/*        <Space>*/}
+        {/*            <Button key="back" onClick={handleValuePush}>*/}
+        {/*                推送*/}
+        {/*            </Button>*/}
+        {/*            <Button key="back" onClick={handleModalClose}>*/}
+        {/*                关闭*/}
+        {/*            </Button>*/}
+        {/*        </Space>*/}
+        {/*    ]}*/}
+        {/*>*/}
+        {/*    <Form*/}
+        {/*        form={pushForm}*/}
+        {/*        style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}*/}
+        {/*    >*/}
+        {/*        <Form.Item name="name" label="变量名">*/}
+        {/*            {pushForm.getFieldValue("name")}*/}
+        {/*        </Form.Item>*/}
+        {/*        <Form.Item name="className" label="全类名">*/}
+        {/*            {pushForm.getFieldValue("className")}*/}
+        {/*        </Form.Item>*/}
+        {/*        <Form.Item name="namespace" label="命名空间">*/}
+        {/*            {pushForm.getFieldValue("namespace")}*/}
+        {/*        </Form.Item>*/}
+        {/*        <Form.Item name="description" label="变量描述">*/}
+        {/*            {pushForm.getFieldValue("description")}*/}
+        {/*        </Form.Item>*/}
+        {/*        <Form.Item name="fieldValue" label="变量值">*/}
+        {/*            <Input.TextArea value={pushForm.getFieldValue("fieldValue")} onChange={(e) => pushForm.setFieldValue("fieldValue", e.target.value)} rows={4}/>*/}
+        {/*        </Form.Item>*/}
+        {/*        <Form.Item name="pushType" label="推送方式">*/}
+        {/*            <Radio.Group value={pushForm.getFieldValue("pushType")}>*/}
+        {/*                <Radio value={"all"}>所有机器</Radio>*/}
+        {/*                <Radio value={"specific"}>指定机器</Radio>*/}
+        {/*            </Radio.Group>*/}
+        {/*        </Form.Item>*/}
+        {/*        <Form.Item*/}
+        {/*            noStyle*/}
+        {/*            shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}*/}
+        {/*        >*/}
+        {/*            {({getFieldValue}) => {*/}
+        {/*                return getFieldValue('pushType') === 'specific' ? (*/}
+        {/*                    <Form.Item name="machines" label="推送机器">*/}
+        {/*                        <MachineSelect mode="multiple" form={pushForm}/>*/}
+        {/*                    </Form.Item>*/}
+        {/*                ) : null*/}
+        {/*            }}*/}
+        {/*        </Form.Item>*/}
+        {/*        <Form.Item name="isUpdateTemplate" label="是否更新默认模板值">*/}
+        {/*            <Radio.Group value={pushForm.getFieldValue("isUpdateTemplate")}>*/}
+        {/*                <Radio value={true}>是</Radio>*/}
+        {/*                <Radio value={false}>否</Radio>*/}
+        {/*            </Radio.Group>*/}
+        {/*        </Form.Item>*/}
+        {/*    </Form>*/}
+        {/*</Modal>*/}
     </>
 }
 
