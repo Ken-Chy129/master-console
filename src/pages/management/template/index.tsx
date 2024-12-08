@@ -1,6 +1,6 @@
-import {Button, Col, Form, Input, Modal, Row, Space, Table, Tabs, Tooltip} from "antd";
+import {Button, Col, Form, Input, message, Modal, Row, Space, Table, Tabs, Tooltip} from "antd";
 import React, {useEffect, useState} from "react";
-import {doGetRequest} from "@/util/http";
+import {doGetRequest, doPostRequest} from "@/util/http";
 import {TEMPLATE_API} from "@/services/management";
 import {FieldSelect, NamespaceSelect} from "@/components";
 
@@ -58,6 +58,10 @@ const TemplatePage = () => {
 
     const handleOpenModifiedModal = (templateFieldId: string) => {
         console.log(templateFieldId);
+        const fieldValue = modifiedModalForm.getFieldValue("value");
+        doPostRequest(TEMPLATE_API.UPDATE_FIELD, {id: templateFieldId, fieldValue}, {
+            onSuccess: _ => message.success("推送成功").then(_ => {})
+        });
         setShowModifiedModal(true);
 
     }
