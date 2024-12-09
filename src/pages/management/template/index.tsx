@@ -34,7 +34,7 @@ const TemplatePage = () => {
     const queryTemplateList = () => {
         doGetRequest(TEMPLATE_API.LIST_BY_APPID, {}, {
             onSuccess: res => {
-                res.data.forEach((template:any) => {template.label = template.name; template.key = template.id});
+                res.data.forEach((template:any) => {template.label = template.name; template.key = template.id; template.value = template.id});
                 setTemplateList(res.data);
                 setSelectedTemplateId(res.data[0].id);
             }
@@ -93,9 +93,10 @@ const TemplatePage = () => {
         const name = newTemplateForm.getFieldValue("name");
         const description = newTemplateForm.getFieldValue("description");
         const fromTemplate = newTemplateForm.getFieldValue("fromTemplate");
-        doPostRequest("", {name, description, fromTemplate}, {
-            onSuccess: res => {}
-        })
+        console.log(name, description, fromTemplate);
+        // doPostRequest("", {name, description, fromTemplate}, {
+        //     onSuccess: res => {}
+        // })
     }
 
     const handleValuePush = () => {
@@ -119,13 +120,19 @@ const TemplatePage = () => {
             title: '字段名',
             dataIndex: 'fieldName',
             key: 'fieldName',
-            width: '20%', // 设置列宽为30%
+            width: '15%', // 设置列宽为30%
         },
         {
             title: '字段值',
             dataIndex: 'fieldValue',
             key: 'fieldValue',
-            width: '30%', // 设置列宽为30%
+            width: '23%', // 设置列宽为30%
+        },
+        {
+            title: '上次修改时间',
+            dataIndex: 'gmtModified',
+            key: 'gmtModified',
+            width: '15%', // 设置列宽为30%
         },
         {
             title: '操作',
@@ -133,14 +140,17 @@ const TemplatePage = () => {
             render: (text: string, templateField: {id: string, fieldId: string, fieldValue: string}) => (
                 <span>
                   <Button type="primary" onClick={() => handleOpenModifiedModal(templateField.id)}>
-                    修改
+                    值修改
                   </Button>
                   <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handlePushModal(templateField.fieldId, templateField.fieldValue)}>
-                    推送
+                    值推送
+                  </Button>
+                  <Button type="primary" key="delete" style={{ marginLeft: 8 }} onClick={handleModalClose}>
+                    字段删除
                   </Button>
                 </span>
             ),
-            width: '25%', // 设置列宽为30%
+            width: '22%', // 设置列宽为30%
         }
     ];
 
@@ -176,10 +186,24 @@ const TemplatePage = () => {
                         </Button>
                     </Form.Item>
                 </Col>
-                <Col>
-                    <Form.Item style={{marginLeft: 30}}>
-                        <Button type="primary" htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                <Col offset={8}>
+                    <Form.Item style={{marginLeft: 0}}>
+                        <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
                             新建模板
+                        </Button>
+                    </Form.Item>
+                </Col>
+                <Col>
+                    <Form.Item style={{marginLeft: 20}}>
+                        <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                            新增字段
+                        </Button>
+                    </Form.Item>
+                </Col>
+                <Col>
+                    <Form.Item style={{marginLeft: 20}}>
+                        <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                            模板推送
                         </Button>
                     </Form.Item>
                 </Col>
@@ -239,14 +263,19 @@ const TemplatePage = () => {
             ]}
         >
             <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}}>
-                <Form.Item name={"name"} label={"模板名称"}>
+                <Form.Item name={"name"} label={"模板名称"} required={true}>
                     <Input/>
                 </Form.Item>
                 <Form.Item name={"description"} label={"模板描述"}>
                     <Input.TextArea/>
                 </Form.Item>
-                <Form.Item name={"fromTemplate"} label={"复制自模板"}>
-                    <Select/>
+                <Form.Item name={"fromTemplate"} label={"来源模板"}>
+                    <Select
+                        placeholder="请选择模板"
+                        allowClear
+                        options={templateList}
+                        notFoundContent={"暂无命名空间"}
+                    />
                 </Form.Item>
             </Form>
         </Modal>
