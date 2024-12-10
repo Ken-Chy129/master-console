@@ -34,7 +34,11 @@ const TemplatePage = () => {
     const queryTemplateList = () => {
         doGetRequest(TEMPLATE_API.LIST_BY_APPID, {}, {
             onSuccess: res => {
-                res.data.forEach((template:any) => {template.label = template.name; template.key = template.id; template.value = template.id});
+                res.data.forEach((template: any) => {
+                    template.label = template.name;
+                    template.key = template.id;
+                    template.value = template.id
+                });
                 setTemplateList(res.data);
                 setSelectedTemplateId(res.data[0].id);
             }
@@ -44,7 +48,13 @@ const TemplatePage = () => {
     const queryTemplateFieldList = () => {
         const namespaceId = conditionForm.getFieldValue("namespaceId");
         const fieldName = conditionForm.getFieldValue("fieldName");
-        doGetRequest(TEMPLATE_API.PAGE_FIELD_BY_CONDITION, {templateId: selectedTemplateId, namespaceId, fieldName, pageIndex, pageSize}, {
+        doGetRequest(TEMPLATE_API.PAGE_FIELD_BY_CONDITION, {
+            templateId: selectedTemplateId,
+            namespaceId,
+            fieldName,
+            pageIndex,
+            pageSize
+        }, {
             onSuccess: res => {
                 console.log(res.data);
                 setTotal(res.total);
@@ -84,7 +94,8 @@ const TemplatePage = () => {
             onSuccess: _ => {
                 queryTemplateFieldList();
                 handleModalClose();
-                message.success("推送成功").then(_ => {});
+                message.success("推送成功").then(_ => {
+                });
             }
         });
     }
@@ -105,7 +116,8 @@ const TemplatePage = () => {
         const pushType = pushForm.getFieldValue("pushType");
         const machines = pushForm.getFieldValue("machines");
         doPostRequest("", {name, fieldValue, pushType, machines}, {
-            onSuccess: res => {}
+            onSuccess: res => {
+            }
         })
     }
 
@@ -137,15 +149,16 @@ const TemplatePage = () => {
         {
             title: '操作',
             key: 'action',
-            render: (text: string, templateField: {id: string, fieldId: string, fieldValue: string}) => (
+            render: (text: string, templateField: { id: string, fieldId: string, fieldValue: string }) => (
                 <span>
                   <Button type="primary" onClick={() => handleOpenModifiedModal(templateField.id)}>
                     值修改
                   </Button>
-                  <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handlePushModal(templateField.fieldId, templateField.fieldValue)}>
+                  <Button type="primary" style={{marginLeft: 20}}
+                          onClick={() => handlePushModal(templateField.fieldId, templateField.fieldValue)}>
                     值推送
                   </Button>
-                  <Button type="primary" key="delete" style={{ marginLeft: 8 }} onClick={handleModalClose}>
+                  <Button type="primary" key="delete" style={{marginLeft: 20}} onClick={handleModalClose}>
                     字段删除
                   </Button>
                 </span>
@@ -157,57 +170,47 @@ const TemplatePage = () => {
     return <>
         <Tabs onChange={(key) => setSelectedTemplateId(key as string)}>
             {templateList.map(template => (
-                <Tabs.TabPane tab={<Tooltip title={template.description}>{template.label}</Tooltip>} key={template.key}/>
+                <Tabs.TabPane tab={<Tooltip title={template.description}>{template.label}</Tooltip>}
+                              key={template.key}/>
             ))}
         </Tabs>
-        <Form form={conditionForm}>
-            <Row>
-                <Col span={4}>
-                    <Form.Item name="namespaceId" label="命名空间">
-                        <NamespaceSelect form={conditionForm}/>
-                    </Form.Item>
-                </Col>
-                <Col span={4}>
-                    <Form.Item name="fieldName" label="字段名">
-                        <FieldSelect form={conditionForm}/>
-                    </Form.Item>
-                </Col>
-                <Col>
-                    <Form.Item style={{marginLeft: 30}}>
-                        <Button type="primary" htmlType="submit" onClick={queryTemplateFieldList}>
-                            查询
-                        </Button>
-                    </Form.Item>
-                </Col>
-                <Col>
-                    <Form.Item style={{marginLeft: 30}}>
-                        <Button type="primary" htmlType="reset" onClick={() => conditionForm.resetFields()}>
-                            重置
-                        </Button>
-                    </Form.Item>
-                </Col>
-                <Col offset={8}>
-                    <Form.Item style={{marginLeft: 0}}>
-                        <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
-                            新建模板
-                        </Button>
-                    </Form.Item>
-                </Col>
-                <Col>
-                    <Form.Item style={{marginLeft: 20}}>
-                        <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
-                            新增字段
-                        </Button>
-                    </Form.Item>
-                </Col>
-                <Col>
-                    <Form.Item style={{marginLeft: 20}}>
-                        <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
-                            模板推送
-                        </Button>
-                    </Form.Item>
-                </Col>
-            </Row>
+        <Form form={conditionForm}
+              style={{display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "nowrap"}}>
+            <div style={{display: "flex"}}>
+                <Form.Item name="namespaceId" label="命名空间" style={{minWidth: 250}}>
+                    <NamespaceSelect form={conditionForm}/>
+                </Form.Item>
+                <Form.Item name="fieldName" label="字段名" style={{minWidth: 250}}>
+                    <FieldSelect form={conditionForm}/>
+                </Form.Item>
+                <Form.Item style={{marginLeft: 30}}>
+                    <Button type="primary" htmlType="submit" onClick={queryTemplateFieldList}>
+                        查询
+                    </Button>
+                </Form.Item>
+                <Form.Item style={{marginLeft: 30}}>
+                    <Button type="primary" htmlType="reset" onClick={() => conditionForm.resetFields()}>
+                        重置
+                    </Button>
+                </Form.Item>
+            </div>
+            <div style={{display: "flex"}}>
+                <Form.Item>
+                    <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                        新建模板
+                    </Button>
+                </Form.Item>
+                <Form.Item style={{marginLeft: 20}}>
+                    <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                        新增字段
+                    </Button>
+                </Form.Item>
+                <Form.Item style={{marginLeft: 20}}>
+                    <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                        模板推送
+                    </Button>
+                </Form.Item>
+            </div>
         </Form>
         <Table
             columns={columns}
