@@ -14,9 +14,12 @@ const TemplatePage = () => {
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
     const [templateFieldList, setTemplateFieldList] = useState<[]>([]);
 
-    const [showModifiedModal, setShowModifiedModal] = useState<boolean>(false);
     const [showNewTemplateModal, setShowNewTemplateModal] = useState<boolean>(false);
-    const [showPushModal, setShowPushModal] = useState<boolean>(false);
+    const [showNewTemplateFieldModal, setShowNewTemplateFieldModal] = useState<boolean>(false);
+    const [showTemplatePushModal, setShowTemplatePushModal] = useState<boolean>(false);
+    const [showFieldPushModal, setShowFieldPushModal] = useState<boolean>(false);
+    const [showFieldModifiedModal, setShowFieldModifiedModal] = useState<boolean>(false);
+    const [showFieldDeleteModal, setShowFieldDeleteModal] = useState<boolean>(false);
 
     const [pageIndex, setPageIndex] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -67,24 +70,23 @@ const TemplatePage = () => {
         modifiedModalForm.resetFields();
         newTemplateForm.resetFields();
         pushForm.resetFields();
-        setShowModifiedModal(false);
         setShowNewTemplateModal(false);
-        setShowPushModal(false);
+        setShowTemplatePushModal(false);
+        setShowNewTemplateFieldModal(false);
+        setShowFieldModifiedModal(false);
+        setShowFieldPushModal(false);
+        setShowFieldDeleteModal(false);
     }
 
-    const handleOpenNewTemplateModal = () => {
-        setShowNewTemplateModal(true);
-    }
-
-    const handlePushModal = (fieldId: string, fieldValue: string) => {
+    const handleFieldPushModal = (fieldId: string, fieldValue: string) => {
         modifiedModalForm.setFieldValue("fieldId", fieldId);
         modifiedModalForm.setFieldValue("fieldValue", fieldValue);
-        setShowPushModal(true);
+        setShowFieldPushModal(true);
     }
 
-    const handleOpenModifiedModal = (templateFieldId: string) => {
+    const handleOpenFieldModifiedModal = (templateFieldId: string) => {
         modifiedModalForm.setFieldValue("templateFieldId", templateFieldId);
-        setShowModifiedModal(true);
+        setShowFieldModifiedModal(true);
     }
 
     const handleUpdateTemplateField = () => {
@@ -151,12 +153,11 @@ const TemplatePage = () => {
             key: 'action',
             render: (text: string, templateField: { id: string, fieldId: string, fieldValue: string }) => (
                 <span>
-                  <Button type="primary" onClick={() => handleOpenModifiedModal(templateField.id)}>
-                    值修改
-                  </Button>
-                  <Button type="primary" style={{marginLeft: 20}}
-                          onClick={() => handlePushModal(templateField.fieldId, templateField.fieldValue)}>
+                  <Button type="primary" onClick={() => handleFieldPushModal(templateField.fieldId, templateField.fieldValue)}>
                     值推送
+                  </Button>
+                  <Button type="primary" style={{marginLeft: 20}} onClick={() => handleOpenFieldModifiedModal(templateField.id)}>
+                    值修改
                   </Button>
                   <Button type="primary" key="delete" style={{marginLeft: 20}} onClick={handleModalClose}>
                     字段删除
@@ -196,17 +197,17 @@ const TemplatePage = () => {
             </div>
             <div style={{display: "flex"}}>
                 <Form.Item>
-                    <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                    <Button htmlType="reset" onClick={() => setShowNewTemplateModal(true)}>
                         新建模板
                     </Button>
                 </Form.Item>
                 <Form.Item style={{marginLeft: 20}}>
-                    <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                    <Button htmlType="reset" onClick={() => setShowNewTemplateFieldModal(true)}>
                         新增字段
                     </Button>
                 </Form.Item>
-                <Form.Item style={{marginLeft: 20}}>
-                    <Button htmlType="reset" onClick={handleOpenNewTemplateModal}>
+                <Form.Item style={{marginLeft: 20, marginRight: 10}}>
+                    <Button htmlType="reset" onClick={() => setShowTemplatePushModal(true)}>
                         模板推送
                     </Button>
                 </Form.Item>
@@ -227,9 +228,115 @@ const TemplatePage = () => {
             }}
             rowKey="id"
         />
+
+        <Modal title="新建模板" open={showNewTemplateModal} onOk={handleModalClose} onCancel={handleModalClose}
+               footer={[
+                   <Space>
+                       <Button key="save" onClick={handleNewTemplate}>
+                           保存
+                       </Button>
+                       <Button key="close" onClick={handleModalClose}>
+                           关闭
+                       </Button>
+                   </Space>
+               ]}
+        >
+            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}} labelCol={{span: 5}}
+                  wrapperCol={{span: 18}}>
+                <Form.Item name={"name"} label={"模板名称"} required={true}>
+                    <Input/>
+                </Form.Item>
+                <Form.Item name={"description"} label={"模板描述"}>
+                    <Input.TextArea/>
+                </Form.Item>
+                <Form.Item name={"fromTemplate"} label={"来源模板"}>
+                    <Select
+                        placeholder="请选择模板"
+                        allowClear
+                        options={templateList}
+                        notFoundContent={"暂无命名空间"}
+                    />
+                </Form.Item>
+            </Form>
+        </Modal>
+        <Modal title="新增字段" open={showNewTemplateFieldModal} onOk={handleModalClose} onCancel={handleModalClose}
+               footer={[
+                   <Space>
+                       <Button key="save" onClick={handleNewTemplate}>
+                           保存
+                       </Button>
+                       <Button key="close" onClick={handleModalClose}>
+                           关闭
+                       </Button>
+                   </Space>
+               ]}
+        >
+            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}} labelCol={{span: 5}}
+                  wrapperCol={{span: 18}}>
+                <Form.Item name={"fromTemplate"} label={"选择模板"}>
+                    <Select
+                        placeholder="请选择模板"
+                        allowClear
+                        options={templateList}
+                        notFoundContent={"暂无命名空间"}
+                    />
+                </Form.Item>
+                <Form.Item name={"name"} label={"选择字段"} required={true}>
+                    <NamespaceSelect form={conditionForm}/>
+                    <FieldSelect form={conditionForm}/>
+                </Form.Item>
+                <Form.Item name={"value"} label={"字段值"}>
+                    <Input.TextArea/>
+                </Form.Item>
+            </Form>
+        </Modal>
+        <Modal title="模板推送" open={showTemplatePushModal} onOk={handleModalClose} onCancel={handleModalClose}
+               footer={[
+                   <Space>
+                       <Button key="save" onClick={handleNewTemplate}>
+                           保存
+                       </Button>
+                       <Button key="close" onClick={handleModalClose}>
+                           关闭
+                       </Button>
+                   </Space>
+               ]}
+        >
+            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}} labelCol={{span: 5}}
+                  wrapperCol={{span: 18}}>
+                <Form.Item name={"fromTemplate"} label={"选择模板"}>
+                    <Select
+                        placeholder="请选择模板"
+                        allowClear
+                        options={templateList}
+                        notFoundContent={"暂无命名空间"}
+                    />
+                </Form.Item>
+                <Form.Item name="pushType" label="推送方式">
+                    <Radio.Group value={pushForm.getFieldValue("pushType")}>
+                        <Radio value={"all"}>所有机器</Radio>
+                        <Radio value={"specific"}>指定机器</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                <Form.Item
+                    noStyle
+                    shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}
+                >
+                    {({getFieldValue}) => {
+                        return getFieldValue('pushType') === 'specific' ? (
+                            <Form.Item name="machines" label="推送机器">
+                                <MachineSelect mode="multiple" form={pushForm}/>
+                            </Form.Item>
+                        ) : null
+                    }}
+                </Form.Item>
+            </Form>
+        </Modal>
+
+
         <Modal
             title="修改"
-            open={showModifiedModal}
+            open={showFieldModifiedModal}
             onOk={handleModalClose}
             onCancel={handleModalClose}
             footer={[
@@ -250,41 +357,8 @@ const TemplatePage = () => {
             </Form>
         </Modal>
         <Modal
-            title="新建模板"
-            open={showNewTemplateModal}
-            onOk={handleModalClose}
-            onCancel={handleModalClose}
-            footer={[
-                <Space>
-                    <Button key="save" onClick={handleNewTemplate}>
-                        保存
-                    </Button>
-                    <Button key="close" onClick={handleModalClose}>
-                        关闭
-                    </Button>
-                </Space>
-            ]}
-        >
-            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
-                <Form.Item name={"name"} label={"模板名称"} required={true}>
-                    <Input/>
-                </Form.Item>
-                <Form.Item name={"description"} label={"模板描述"}>
-                    <Input.TextArea/>
-                </Form.Item>
-                <Form.Item name={"fromTemplate"} label={"来源模板"}>
-                    <Select
-                        placeholder="请选择模板"
-                        allowClear
-                        options={templateList}
-                        notFoundContent={"暂无命名空间"}
-                    />
-                </Form.Item>
-            </Form>
-        </Modal>
-        <Modal
             title="模板值推送"
-            open={showPushModal}
+            open={showFieldPushModal}
             onOk={handleModalClose}
             onCancel={handleModalClose}
             footer={[

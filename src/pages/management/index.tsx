@@ -134,10 +134,10 @@ const ManagementPage = () => {
                   <Button type="primary" onClick={() => handlePushClick(field.id)}>
                     推送
                   </Button>
-                  <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handleDistributionClick(field.id)}>
+                  <Button type="primary" style={{ marginLeft: 20 }} onClick={() => handleDistributionClick(field.id)}>
                     查看分布
                   </Button>
-                  <Button type="primary" style={{ marginLeft: 8 }} onClick={() => handleShowLog(field)}>
+                  <Button type="primary" style={{ marginLeft: 20 }} onClick={() => handleShowLog(field)}>
                     查看日志
                   </Button>
                 </span>
@@ -259,16 +259,7 @@ const ManagementPage = () => {
                 open={showModalIndex == 2}
                 onOk={handleModalClose}
                 onCancel={handleModalClose}
-                footer={[
-                    <Space>
-                        <Button key="back" onClick={handleValuePush}>
-                            推送
-                        </Button>
-                        <Button key="back" onClick={handleModalClose}>
-                            关闭
-                        </Button>
-                    </Space>
-                ]}
+                footer={[]}
             >
                 <Form
                     form={fieldValueForm}
