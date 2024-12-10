@@ -265,7 +265,7 @@ const TemplatePage = () => {
                 </Space>
             ]}
         >
-            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}}>
+            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
                 <Form.Item name={"name"} label={"模板名称"} required={true}>
                     <Input/>
                 </Form.Item>
