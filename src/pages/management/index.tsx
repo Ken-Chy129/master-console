@@ -3,7 +3,7 @@ import {FIELD_API} from "@/services/management"
 import {Table, Button, Modal, Form, Input, Space, Radio, message, Row, Col} from "antd";
 import {doGetRequest, doPostRequest} from "@/util/http";
 import {history} from "@@/core/history";
-import {Loading, MachineSelect, NamespaceSelect} from "@/components"
+import {FieldSelect, Loading, MachineSelect, NamespaceSelect} from "@/components"
 
 
 const ManagementPage = () => {
@@ -155,7 +155,7 @@ const ManagementPage = () => {
                             <NamespaceSelect form={conditionForm}/>
                         </Form.Item>
                         <Form.Item name="fieldName" label="字段名" style={{marginLeft: 20}}>
-                            <Input placeholder={"请输入字段名称"} style={{minWidth: 250}}/>
+                            <FieldSelect form={conditionForm}/>
                         </Form.Item>
                         <Form.Item style={{marginLeft: 30}}>
                             <Button type="primary" htmlType="submit" onClick={queryManagementField}>
