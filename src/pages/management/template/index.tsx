@@ -240,9 +240,9 @@ const TemplatePage = () => {
                        </Button>
                    </Space>
                ]}
+               style={{maxWidth: 600}}
         >
-            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}} labelCol={{span: 5}}
-                  wrapperCol={{span: 18}}>
+            <Form form={newTemplateForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
                 <Form.Item name={"name"} label={"模板名称"} required={true}>
                     <Input/>
                 </Form.Item>
@@ -253,6 +253,8 @@ const TemplatePage = () => {
                     <Select
                         placeholder="请选择模板"
                         allowClear
+                        showSearch={true}
+                        optionFilterProp={"label"}
                         options={templateList}
                         notFoundContent={"暂无命名空间"}
                     />
@@ -270,9 +272,9 @@ const TemplatePage = () => {
                        </Button>
                    </Space>
                ]}
+               style={{maxWidth: 600}}
         >
-            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}} labelCol={{span: 5}}
-                  wrapperCol={{span: 18}}>
+            <Form form={newTemplateForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
                 <Form.Item name={"fromTemplate"} label={"选择模板"}>
                     <Select
                         placeholder="请选择模板"
@@ -303,13 +305,15 @@ const TemplatePage = () => {
                        </Button>
                    </Space>
                ]}
+               style={{maxWidth: 600}}
         >
-            <Form form={newTemplateForm} style={{maxWidth: 500, margin: 35}} labelCol={{span: 5}}
-                  wrapperCol={{span: 18}}>
+            <Form form={newTemplateForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
                 <Form.Item name={"fromTemplate"} label={"选择模板"}>
                     <Select
                         placeholder="请选择模板"
                         allowClear
+                        showSearch={true}
+                        optionFilterProp={"label"}
                         options={templateList}
                         notFoundContent={"暂无命名空间"}
                     />
@@ -351,8 +355,9 @@ const TemplatePage = () => {
                     </Button>
                 </Space>
             ]}
+            style={{maxWidth: 600}}
         >
-            <Form form={modifiedModalForm} style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}>
+            <Form form={modifiedModalForm} style={{margin: 30}}>
                 <Form.Item name={"value"} label={"新值"}>
                     <Input.TextArea/>
                 </Form.Item>
@@ -373,11 +378,9 @@ const TemplatePage = () => {
                     </Button>
                 </Space>
             ]}
+            style={{maxWidth: 600}}
         >
-            <Form
-                form={pushForm}
-                style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}
-            >
+            <Form form={pushForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
                 <Form.Item name="pushType" label="推送方式">
                     <Radio.Group value={pushForm.getFieldValue("pushType")}>
                         <Radio value={"all"}>所有机器</Radio>

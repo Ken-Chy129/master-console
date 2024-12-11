@@ -201,10 +201,12 @@ const ManagementPage = () => {
                         </Button>
                     </Space>
                 ]}
+                style={{minWidth: 600}}
             >
                 <Form
                     form={pushForm}
-                    style={{maxWidth: 600, marginTop: 30, marginBottom: 30}}
+                    style={{marginTop: 30}}
+                    labelCol={{span: 7}} wrapperCol={{span: 15}}
                 >
                     <Form.Item name="name" label="变量名">
                         {pushForm.getFieldValue("name")}
@@ -239,7 +241,7 @@ const ManagementPage = () => {
                             ) : null
                         }}
                     </Form.Item>
-                    <Form.Item name="isUpdateTemplate" label="是否更新默认模板值">
+                    <Form.Item name="isUpdateTemplate" label="是否更新默认模板">
                         <Radio.Group value={pushForm.getFieldValue("isUpdateTemplate")}>
                             <Radio value={true}>是</Radio>
                             <Radio value={false}>否</Radio>
@@ -254,10 +256,12 @@ const ManagementPage = () => {
                 onOk={handleModalClose}
                 onCancel={handleModalClose}
                 footer={[]}
+                style={{minWidth: 800}}
             >
                 <Form
                     form={fieldValueForm}
-                    style={{ maxWidth: 600, marginTop: 30, marginBottom: 30}}
+                    style={{marginTop: 30}}
+                    labelCol={{span: 4}} wrapperCol={{span: 18}}
                 >
                     <Form.Item name="name" label="变量名">
                         {fieldValueForm.getFieldValue("name")}
@@ -271,7 +275,7 @@ const ManagementPage = () => {
                     <Form.Item name="description" label="变量描述">
                         {fieldValueForm.getFieldValue("description")}
                     </Form.Item>
-                    <Form.Item name="fieldValue" label="变量值">
+                    <Form.Item name="fieldValue" label="变量值" colon={false}>
                         <Table dataSource={fieldValueForm.getFieldValue("machineValueList")} columns={
                             [
                                 {
