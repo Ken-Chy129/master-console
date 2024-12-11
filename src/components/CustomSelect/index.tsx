@@ -6,8 +6,9 @@ import {MACHINE_API} from "@/services/app";
 
 export const NamespaceSelect: React.FC<{
     form: FormInstance
+    style?: React.CSSProperties
     onChange?: (value: any) => void
-}> = ({form, onChange}) => {
+}> = ({form, style = {minWidth: 250}, onChange}) => {
     const [namespaceList, setNamespaceList] = useState<Namespace[]>([]);
 
     useEffect(() => {
@@ -17,7 +18,10 @@ export const NamespaceSelect: React.FC<{
     const queryNamespace = () => {
         doGetRequest(NAMESPACE_API.LIST_BY_APPID, {}, {
             onSuccess: (res: any) => {
-                res.data.forEach((namespace: any) => {namespace.label = namespace.name; namespace.value = namespace.id});
+                res.data.forEach((namespace: any) => {
+                    namespace.label = namespace.name;
+                    namespace.value = namespace.id
+                });
                 setNamespaceList(res.data);
             }
         });
@@ -29,7 +33,7 @@ export const NamespaceSelect: React.FC<{
             allowClear
             showSearch={true}
             optionFilterProp="label"
-            style={{minWidth: 250}}
+            style={style}
             options={namespaceList}
             value={form.getFieldValue("namespaceId")}
             onChange={onChange}
@@ -40,8 +44,9 @@ export const NamespaceSelect: React.FC<{
 
 export const FieldSelect: React.FC<{
     form: FormInstance,
+    style?: React.CSSProperties
     onChange?: (value: any) => void
-}> = ({form, onChange}) => {
+}> = ({form, style = {minWidth: 250}, onChange}) => {
     const [fieldList, setFieldList] = useState<Field[]>([]);
     const namespaceId = Form.useWatch("namespaceId", form);
 
@@ -54,7 +59,10 @@ export const FieldSelect: React.FC<{
     const queryNamespaceField = () => {
         doGetRequest(FIELD_API.LIST_BY_NAMESPACE_ID, {namespaceId}, {
             onSuccess: (res: any) => {
-                res.data.forEach((field: any) => {field.label = field.name; field.value = field.name});
+                res.data.forEach((field: any) => {
+                    field.label = field.name;
+                    field.value = field.name
+                });
                 setFieldList(res.data);
             }
         });
@@ -66,7 +74,7 @@ export const FieldSelect: React.FC<{
             allowClear
             showSearch={true}
             optionFilterProp="label"
-            style={{minWidth: 250}}
+            style={style}
             options={fieldList}
             value={form.getFieldValue("fieldName")}
             onChange={onChange}
@@ -76,10 +84,12 @@ export const FieldSelect: React.FC<{
 }
 
 export const MachineSelect: React.FC<{
-    mode?: 'multiple' | 'tags',
     form: FormInstance,
-    onChange?: (value: any) => void}
-> = ({mode, form, onChange}) => {
+    style?: React.CSSProperties
+    mode?: 'multiple' | 'tags',
+    onChange?: (value: any) => void
+}
+> = ({form, style = {minWidth: 250}, mode, onChange}) => {
     const [machineList, setMachineList] = useState<[]>([]);
 
     useEffect(() => {
@@ -89,7 +99,10 @@ export const MachineSelect: React.FC<{
     const queryMachineList = () => {
         doGetRequest(MACHINE_API.LIST, {}, {
             onSuccess: (res: any) => {
-                res.data.forEach((machine: any) => {machine.label = machine.ipAddress + ":" + machine.port; machine.value = machine.ipAddress + ":" + machine.port});
+                res.data.forEach((machine: any) => {
+                    machine.label = machine.ipAddress + ":" + machine.port;
+                    machine.value = machine.ipAddress + ":" + machine.port
+                });
                 setMachineList(res.data);
             }
         });
@@ -102,7 +115,7 @@ export const MachineSelect: React.FC<{
             showSearch={true}
             optionFilterProp="label"
             mode={mode}
-            style={{minWidth: 250}}
+            style={style}
             options={machineList}
             value={form.getFieldValue("machines")}
             onChange={onChange}

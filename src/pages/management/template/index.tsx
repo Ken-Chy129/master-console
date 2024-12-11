@@ -284,10 +284,12 @@ const TemplatePage = () => {
                     />
                 </Form.Item>
                 <Form.Item name={"name"} label={"选择字段"} required={true}>
-                            <NamespaceSelect form={conditionForm}/>
-                    <div style={{marginTop: 10}}>
-                        <FieldSelect form={conditionForm}/>
-                    </div>
+                    <Form.Item name={"namespaceId"} style={{marginBottom: 0}}>
+                        <NamespaceSelect form={newTemplateForm}/>
+                    </Form.Item>
+                    <Form.Item name={"fieldName"} style={{marginTop: 10, marginBottom: 0}}>
+                        <FieldSelect form={newTemplateForm}/>
+                    </Form.Item>
                 </Form.Item>
                 <Form.Item name={"value"} label={"字段值"}>
                     <Input.TextArea/>
