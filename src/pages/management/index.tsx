@@ -112,19 +112,19 @@ const ManagementPage = () => {
             title: '命名空间',
             dataIndex: 'namespace',
             key: 'namespace',
-            width: '20%'
+            width: '23%'
         },
         {
             title: '字段名',
             dataIndex: 'name',
             key: 'name',
-            width: '20%', // 设置列宽为30%
+            width: '22%', // 设置列宽为30%
         },
         {
             title: '描述',
             dataIndex: 'description',
             key: 'description',
-            width: '35%', // 设置列宽为30%
+            width: '30%', // 设置列宽为30%
         },
         {
             title: '操作',
@@ -150,29 +150,23 @@ const ManagementPage = () => {
         <div>
             <Loading loading={loading} error={error} content={
                 <div>
-                    <Form form={conditionForm}>
-                        <Row>
-                            <Col span={4}>
-                                <Form.Item name="namespaceId" label="命名空间">
-                                    <NamespaceSelect form={conditionForm}/>
-                                </Form.Item>
-                            </Col>
-                            <Col span={4}>
-                                <Form.Item name="fieldName" label="字段名">
-                                    <Input/>
-                                </Form.Item>
-                            </Col>
-                            <Form.Item style={{marginLeft: 30}}>
-                                <Button type="primary" htmlType="submit" onClick={queryManagementField}>
-                                    查询
-                                </Button>
-                            </Form.Item>
-                            <Form.Item style={{marginLeft: 30}}>
-                                <Button type="primary" htmlType="reset" onClick={() => conditionForm.resetFields()}>
-                                    重置
-                                </Button>
-                            </Form.Item>
-                        </Row>
+                    <Form form={conditionForm} style={{display: "flex"}}>
+                        <Form.Item name="namespaceId" label="命名空间">
+                            <NamespaceSelect form={conditionForm}/>
+                        </Form.Item>
+                        <Form.Item name="fieldName" label="字段名" style={{marginLeft: 20}}>
+                            <Input placeholder={"请输入字段名称"} style={{minWidth: 250}}/>
+                        </Form.Item>
+                        <Form.Item style={{marginLeft: 30}}>
+                            <Button type="primary" htmlType="submit" onClick={queryManagementField}>
+                                查询
+                            </Button>
+                        </Form.Item>
+                        <Form.Item style={{marginLeft: 30}}>
+                            <Button type="primary" htmlType="reset" onClick={() => conditionForm.resetFields()}>
+                                重置
+                            </Button>
+                        </Form.Item>
                     </Form>
                     <Table
                         columns={columns}

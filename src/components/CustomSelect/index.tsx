@@ -27,7 +27,9 @@ export const NamespaceSelect: React.FC<{
         <Select
             placeholder="请选择命名空间"
             allowClear
-            style={{width: "90%"}}
+            showSearch={true}
+            optionFilterProp="label"
+            style={{minWidth: 250}}
             options={namespaceList}
             value={form.getFieldValue("namespaceId")}
             onChange={onChange}
@@ -62,7 +64,9 @@ export const FieldSelect: React.FC<{
         <Select
             placeholder="请选择字段"
             allowClear
-            style={{width: "90%"}}
+            showSearch={true}
+            optionFilterProp="label"
+            style={{minWidth: 250}}
             options={fieldList}
             value={form.getFieldValue("fieldName")}
             onChange={onChange}
@@ -95,8 +99,10 @@ export const MachineSelect: React.FC<{
         <Select
             placeholder="请选择目标机器"
             allowClear
+            showSearch={true}
+            optionFilterProp="label"
             mode={mode}
-            style={{width: "90%"}}
+            style={{minWidth: 250}}
             options={machineList}
             value={form.getFieldValue("machines")}
             onChange={onChange}

@@ -11,54 +11,44 @@ const ManagementLogPage = () => {
             title: '命名空间',
             dataIndex: 'namespace',
             key: 'namespace',
-            // width: '10%', // 设置列宽为30%
+            width: '20%', // 设置列宽为30%
         },
         {
             title: '字段名',
             dataIndex: 'fieldName',
             key: 'fieldName',
-            // width: '10%', // 设置列宽为30%
+            width: '15%', // 设置列宽为30%
         },
         {
             title: '变更前旧值',
             dataIndex: 'beforeValue',
             key: 'beforeValue',
-            // width: '45%', // 设置列宽为30%
+            width: '15%', // 设置列宽为30%
         },
         {
             title: '变更后新值',
             dataIndex: 'afterValue',
             key: 'afterValue',
-            // width: '45%', // 设置列宽为30%
+            width: '15%', // 设置列宽为30%
         },
         {
             title: '推送机器',
             dataIndex: 'machine',
             key: 'machine',
-            // width: '45%', // 设置列宽为30%
+            width: '12%', // 设置列宽为30%
         },
         {
             title: '操作时间',
             dataIndex: 'gmtModified',
             key: 'gmtModified',
-            // width: '45%', // 设置列宽为30%
+            width: '14%', // 设置列宽为30%
         },
         {
             title: '变更人',
             dataIndex: 'modifier',
             key: 'modifier',
-            // width: '45%', // 设置列宽为30%
-        },
-        {
-            title: '操作',
-            key: 'action',
-            render: (text: string, field: Field) => (
-                <span>
-
-                </span>
-            ),
-            // width: '25%', // 设置列宽为30%
-        },
+            width: '14%', // 设置列宽为30%
+        }
     ];
 
     const [managementLog, setManagementLog] = useState<[]>([]);
@@ -97,39 +87,29 @@ const ManagementLogPage = () => {
     }
 
     return <>
-        <Form form={form}>
-            <Row>
-                <Col span={4}>
-                    <Form.Item name="namespaceId" label="命名空间">
-                        <NamespaceSelect form={form}/>
-                    </Form.Item>
-                </Col>
-                <Col span={4}>
-                    <Form.Item name="fieldName" label="字段名">
-                        <FieldSelect form={form}/>
-                    </Form.Item>
-                </Col>
-                <Col span={4}>
-                    <Form.Item name="machines" label="机器列表">
-                        <MachineSelect form={form}/>
-                    </Form.Item>
-                </Col>
-                <Col span={4}>
-                    <Form.Item name="modifier" label="变更人">
-                        <Input style={{width: "90%"}}/>
-                    </Form.Item>
-                </Col>
-                <Form.Item style={{marginLeft: 30}}>
-                    <Button type="primary" htmlType="submit" onClick={queryManagementLog}>
-                        查询
-                    </Button>
-                </Form.Item>
-                <Form.Item style={{marginLeft: 30}}>
-                    <Button type="primary" htmlType="reset" onClick={clear}>
-                        重置
-                    </Button>
-                </Form.Item>
-            </Row>
+        <Form form={form} style={{display: "flex"}}>
+            <Form.Item name="namespaceId" label="命名空间">
+                <NamespaceSelect form={form}/>
+            </Form.Item>
+            <Form.Item name="fieldName" label="字段名" style={{marginLeft: 20}}>
+                <FieldSelect form={form}/>
+            </Form.Item>
+            <Form.Item name="machines" label="机器列表" style={{marginLeft: 20}}>
+                <MachineSelect form={form}/>
+            </Form.Item>
+            <Form.Item name="modifier" label="变更人" style={{marginLeft: 20}}>
+                <Input placeholder={"请输入变更人名称"} style={{minWidth: 250}}/>
+            </Form.Item>
+            <Form.Item style={{marginLeft: 30}}>
+                <Button type="primary" htmlType="submit" onClick={queryManagementLog}>
+                    查询
+                </Button>
+            </Form.Item>
+            <Form.Item style={{marginLeft: 30}}>
+                <Button type="primary" htmlType="reset" onClick={clear}>
+                    重置
+                </Button>
+            </Form.Item>
         </Form>
         <Table
             columns={columns}

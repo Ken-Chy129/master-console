@@ -128,13 +128,13 @@ const TemplatePage = () => {
             title: '命名空间',
             dataIndex: 'namespace',
             key: 'namespace',
-            width: '25%'
+            width: '22%'
         },
         {
             title: '字段名',
             dataIndex: 'fieldName',
             key: 'fieldName',
-            width: '15%', // 设置列宽为30%
+            width: '18%', // 设置列宽为30%
         },
         {
             title: '字段值',
@@ -178,10 +178,10 @@ const TemplatePage = () => {
         <Form form={conditionForm}
               style={{display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "nowrap"}}>
             <div style={{display: "flex"}}>
-                <Form.Item name="namespaceId" label="命名空间" style={{minWidth: 250}}>
+                <Form.Item name="namespaceId" label="命名空间">
                     <NamespaceSelect form={conditionForm}/>
                 </Form.Item>
-                <Form.Item name="fieldName" label="字段名" style={{minWidth: 250}}>
+                <Form.Item name="fieldName" label="字段名" style={{marginLeft: 20}}>
                     <FieldSelect form={conditionForm}/>
                 </Form.Item>
                 <Form.Item style={{marginLeft: 30}}>
@@ -282,8 +282,10 @@ const TemplatePage = () => {
                     />
                 </Form.Item>
                 <Form.Item name={"name"} label={"选择字段"} required={true}>
-                    <NamespaceSelect form={conditionForm}/>
-                    <FieldSelect form={conditionForm}/>
+                            <NamespaceSelect form={conditionForm}/>
+                    <div style={{marginTop: 10}}>
+                        <FieldSelect form={conditionForm}/>
+                    </div>
                 </Form.Item>
                 <Form.Item name={"value"} label={"字段值"}>
                     <Input.TextArea/>
