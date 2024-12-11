@@ -1,4 +1,19 @@
-import {Button, Col, Form, Input, message, Modal, Radio, Row, Select, Space, Table, Tabs, Tooltip} from "antd";
+import {
+    Button,
+    Col,
+    Form,
+    Input,
+    message,
+    Modal,
+    Popconfirm,
+    Radio,
+    Row,
+    Select,
+    Space,
+    Table,
+    Tabs,
+    Tooltip
+} from "antd";
 import React, {useEffect, useState} from "react";
 import {doGetRequest, doPostRequest} from "@/util/http";
 import {TEMPLATE_API} from "@/services/management";
@@ -89,6 +104,11 @@ const TemplatePage = () => {
         setShowFieldModifiedModal(true);
     }
 
+    const handleOpenFieldDeleteModal = (templateFieldId: string) => {
+        modifiedModalForm.setFieldValue("templateFieldId", templateFieldId);
+        setShowFieldDeleteModal(true);
+    }
+
     const handleUpdateTemplateField = () => {
         const id = modifiedModalForm.getFieldValue("templateFieldId");
         const fieldValue = modifiedModalForm.getFieldValue("value");
@@ -159,7 +179,7 @@ const TemplatePage = () => {
                   <Button type="primary" style={{marginLeft: 20}} onClick={() => handleOpenFieldModifiedModal(templateField.id)}>
                     值修改
                   </Button>
-                  <Button type="primary" key="delete" style={{marginLeft: 20}} onClick={handleModalClose}>
+                  <Button type="primary" key="delete" style={{marginLeft: 20}} onClick={() => handleOpenFieldDeleteModal(templateField.id)}>
                     字段删除
                   </Button>
                 </span>
@@ -403,7 +423,10 @@ const TemplatePage = () => {
                 </Form.Item>
             </Form>
         </Modal>
-
+        <Modal title={"字段删除"} open={showFieldDeleteModal} onOk={handleModalClose}
+               onCancel={handleModalClose} style={{maxWidth: 340}}>
+            <p style={{marginTop: 20}}>是否确认进行删除</p>
+        </Modal>
     </>
 }
 
