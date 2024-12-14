@@ -1,13 +1,10 @@
 import {
     Button,
-    Col,
     Form,
     Input,
     message,
     Modal,
-    Popconfirm,
     Radio,
-    Row,
     Select,
     Space,
     Table,
@@ -45,11 +42,13 @@ const TemplatePage = () => {
     }, []);
 
     useEffect(() => {
-        conditionForm.resetFields();
-        queryTemplateFieldList();
+        if (selectedTemplateId) {
+            conditionForm.resetFields();
+            queryTemplateFieldList();
+        }
     }, [selectedTemplateId, pageIndex, pageSize]);
 
-    const queryTemplateList = () => {
+    const queryTemplateList = (selectedKey?: string) => {
         doGetRequest(TEMPLATE_API.LIST_BY_APPID, {}, {
             onSuccess: res => {
                 res.data.forEach((template: any) => {
@@ -58,7 +57,7 @@ const TemplatePage = () => {
                     template.value = template.id
                 });
                 setTemplateList(res.data);
-                setSelectedTemplateId(res.data[0].id);
+                setSelectedTemplateId(selectedKey ?? String(res.data[0].id));
             }
         });
     }
@@ -74,7 +73,6 @@ const TemplatePage = () => {
             pageSize
         }, {
             onSuccess: res => {
-                console.log(res.data);
                 setTotal(res.total);
                 setTemplateFieldList(res.data);
             }
@@ -116,8 +114,7 @@ const TemplatePage = () => {
             onSuccess: _ => {
                 queryTemplateFieldList();
                 handleModalClose();
-                message.success("推送成功").then(_ => {
-                });
+                message.success("推送成功").then(_ => {});
             }
         });
     }
@@ -125,11 +122,14 @@ const TemplatePage = () => {
     const handleNewTemplate = () => {
         const name = newTemplateForm.getFieldValue("name");
         const description = newTemplateForm.getFieldValue("description");
-        const fromTemplate = newTemplateForm.getFieldValue("fromTemplate");
-        console.log(name, description, fromTemplate);
-        // doPostRequest("", {name, description, fromTemplate}, {
-        //     onSuccess: res => {}
-        // })
+        const fromTemplateId = newTemplateForm.getFieldValue("fromTemplate");
+        doPostRequest(TEMPLATE_API.NEW, {name, description, fromTemplateId}, {
+            onSuccess: res => {
+                queryTemplateList(String(res.data));
+                handleModalClose();
+                message.success("推送成功").then(_ => {});
+            }
+        })
     }
 
     const handleValuePush = () => {
@@ -189,7 +189,7 @@ const TemplatePage = () => {
     ];
 
     return <>
-        <Tabs onChange={(key) => setSelectedTemplateId(key as string)}>
+        <Tabs onChange={(key) => {console.log(key); setSelectedTemplateId(key as string)}} activeKey={selectedTemplateId}>
             {templateList.map(template => (
                 <Tabs.TabPane tab={<Tooltip title={template.description}>{template.label}</Tooltip>}
                               key={template.key}/>
