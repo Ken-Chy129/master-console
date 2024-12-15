@@ -21,6 +21,7 @@ const TemplatePage = () => {
     const [newTemplateForm] = Form.useForm();
     const [modifiedModalForm] = Form.useForm();
     const [deleteTemplateForm] = Form.useForm();
+    const [addTemplateFieldForm] = Form.useForm();
     const [pushForm] = Form.useForm();
 
     const [templateList, setTemplateList] = useState<Template[]>([]);
@@ -29,7 +30,7 @@ const TemplatePage = () => {
 
     const [showNewTemplateModal, setShowNewTemplateModal] = useState<boolean>(false);
     const [showDeleteTemplateModal, setShowDeleteTemplateModal] = useState<boolean>(false);
-    const [showNewTemplateFieldModal, setShowNewTemplateFieldModal] = useState<boolean>(false);
+    const [showAddTemplateFieldModal, setShowAddTemplateFieldModal] = useState<boolean>(false);
     const [showTemplatePushModal, setShowTemplatePushModal] = useState<boolean>(false);
     const [showFieldPushModal, setShowFieldPushModal] = useState<boolean>(false);
     const [showFieldModifiedModal, setShowFieldModifiedModal] = useState<boolean>(false);
@@ -90,7 +91,7 @@ const TemplatePage = () => {
         setShowNewTemplateModal(false);
         setShowDeleteTemplateModal(false);
         setShowTemplatePushModal(false);
-        setShowNewTemplateFieldModal(false);
+        setShowAddTemplateFieldModal(false);
         setShowFieldModifiedModal(false);
         setShowFieldPushModal(false);
         setShowFieldDeleteModal(false);
@@ -144,6 +145,20 @@ const TemplatePage = () => {
                 queryTemplateList();
                 handleModalClose();
                 message.success("删除成功").then(_ => {});
+            }
+        })
+    }
+
+    const handleAddTemplateField = () => {
+        const templateId = addTemplateFieldForm.getFieldValue("template");
+        const namespaceId = addTemplateFieldForm.getFieldValue("namespaceId");
+        const fieldName = addTemplateFieldForm.getFieldValue("fieldName");
+        const value = addTemplateFieldForm.getFieldValue("value");
+        doPostRequest(TEMPLATE_API.ADD_FIELD, {templateId, namespaceId, fieldName, value}, {
+            onSuccess: _ => {
+                queryTemplateList(templateId);
+                handleModalClose();
+                message.success("添加成功").then(_ => {});
             }
         })
     }
@@ -243,7 +258,7 @@ const TemplatePage = () => {
                     </Button>
                 </Form.Item>
                 <Form.Item style={{marginLeft: 20}}>
-                    <Button htmlType="reset" onClick={() => setShowNewTemplateFieldModal(true)}>
+                    <Button htmlType="reset" onClick={() => setShowAddTemplateFieldModal(true)}>
                         新增字段
                     </Button>
                 </Form.Item>
@@ -317,7 +332,7 @@ const TemplatePage = () => {
                style={{maxWidth: 600}}
         >
             <Form form={deleteTemplateForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
-                <Form.Item name={"template"} label={"目标模板"}>
+                <Form.Item name={"template"} label={"选择模板"}>
                     <Select
                         placeholder="请选择要删除的模板"
                         allowClear
@@ -329,10 +344,10 @@ const TemplatePage = () => {
                 </Form.Item>
             </Form>
         </Modal>
-        <Modal title="新增字段" open={showNewTemplateFieldModal} onOk={handleModalClose} onCancel={handleModalClose}
+        <Modal title="新增字段" open={showAddTemplateFieldModal} onOk={handleModalClose} onCancel={handleModalClose}
                footer={[
                    <Space>
-                       <Button key="save" onClick={handleNewTemplate}>
+                       <Button key="save" onClick={handleAddTemplateField}>
                            保存
                        </Button>
                        <Button key="close" onClick={handleModalClose}>
@@ -342,8 +357,8 @@ const TemplatePage = () => {
                ]}
                style={{maxWidth: 600}}
         >
-            <Form form={newTemplateForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
-                <Form.Item name={"fromTemplate"} label={"选择模板"}>
+            <Form form={addTemplateFieldForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
+                <Form.Item name={"template"} label={"选择模板"}>
                     <Select
                         placeholder="请选择模板"
                         allowClear
@@ -353,10 +368,10 @@ const TemplatePage = () => {
                 </Form.Item>
                 <Form.Item name={"name"} label={"选择字段"} required={true}>
                     <Form.Item name={"namespaceId"} style={{marginBottom: 0}}>
-                        <NamespaceSelect form={newTemplateForm}/>
+                        <NamespaceSelect form={addTemplateFieldForm}/>
                     </Form.Item>
                     <Form.Item name={"fieldName"} style={{marginTop: 10, marginBottom: 0}}>
-                        <FieldSelect form={newTemplateForm}/>
+                        <FieldSelect form={addTemplateFieldForm}/>
                     </Form.Item>
                 </Form.Item>
                 <Form.Item name={"value"} label={"字段值"}>
