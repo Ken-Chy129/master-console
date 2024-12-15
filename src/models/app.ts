@@ -48,5 +48,6 @@ type Template = {
     name: string;
     description?: string;
     key: string;
+    value: string;
     label: string;
 }

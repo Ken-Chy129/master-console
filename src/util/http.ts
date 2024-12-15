@@ -43,4 +43,26 @@ function doPostRequest(
     });
 }
 
-export {doGetRequest, doPostRequest}
+function doDeleteRequest(
+    apiName: string,
+    params: {},
+    recall: {
+        onSuccess: (response: any) => void,
+        onError?: (response: any) => void,
+        onFinally?: () => void
+    }
+) {
+    request(apiName, {
+        method: 'DELETE',
+        params
+    }).then((res) => {
+        res.success ? recall.onSuccess(res) : recall.onError ? recall.onError(res) : message.error(res.errorMsg);
+    }).catch(() => {
+        message.error("系统异常").then(_ => {});
+    }).finally(() => {
+        recall.onFinally?.();
+    });
+}
+
+
+export {doGetRequest, doPostRequest, doDeleteRequest}

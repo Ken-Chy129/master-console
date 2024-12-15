@@ -61,7 +61,7 @@ export const FieldSelect: React.FC<{
             onSuccess: (res: any) => {
                 res.data.forEach((field: any) => {
                     field.label = field.name;
-                    field.value = field.name
+                    field.value = field.name;
                 });
                 setFieldList(res.data);
             }
@@ -101,7 +101,7 @@ export const MachineSelect: React.FC<{
             onSuccess: (res: any) => {
                 res.data.forEach((machine: any) => {
                     machine.label = machine.ipAddress + ":" + machine.port;
-                    machine.value = machine.ipAddress + ":" + machine.port
+                    machine.value = machine.ipAddress + ":" + machine.port;
                 });
                 setMachineList(res.data);
             }

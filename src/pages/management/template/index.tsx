@@ -12,14 +12,15 @@ import {
     Tooltip
 } from "antd";
 import React, {useEffect, useState} from "react";
-import {doGetRequest, doPostRequest} from "@/util/http";
+import {doDeleteRequest, doGetRequest, doPostRequest} from "@/util/http";
 import {TEMPLATE_API} from "@/services/management";
 import {FieldSelect, MachineSelect, NamespaceSelect} from "@/components";
 
 const TemplatePage = () => {
     const [conditionForm] = Form.useForm();
-    const [modifiedModalForm] = Form.useForm();
     const [newTemplateForm] = Form.useForm();
+    const [modifiedModalForm] = Form.useForm();
+    const [deleteTemplateForm] = Form.useForm();
     const [pushForm] = Form.useForm();
 
     const [templateList, setTemplateList] = useState<Template[]>([]);
@@ -27,6 +28,7 @@ const TemplatePage = () => {
     const [templateFieldList, setTemplateFieldList] = useState<[]>([]);
 
     const [showNewTemplateModal, setShowNewTemplateModal] = useState<boolean>(false);
+    const [showDeleteTemplateModal, setShowDeleteTemplateModal] = useState<boolean>(false);
     const [showNewTemplateFieldModal, setShowNewTemplateFieldModal] = useState<boolean>(false);
     const [showTemplatePushModal, setShowTemplatePushModal] = useState<boolean>(false);
     const [showFieldPushModal, setShowFieldPushModal] = useState<boolean>(false);
@@ -42,6 +44,7 @@ const TemplatePage = () => {
     }, []);
 
     useEffect(() => {
+        newTemplateForm.setFieldValue("fromTemplate", selectedTemplateId);
         if (selectedTemplateId) {
             conditionForm.resetFields();
             queryTemplateFieldList();
@@ -54,7 +57,7 @@ const TemplatePage = () => {
                 res.data.forEach((template: any) => {
                     template.label = template.name;
                     template.key = template.id;
-                    template.value = template.id
+                    template.value = template.id;
                 });
                 setTemplateList(res.data);
                 setSelectedTemplateId(selectedKey ?? String(res.data[0].id));
@@ -80,10 +83,12 @@ const TemplatePage = () => {
     }
 
     const handleModalClose = () => {
-        modifiedModalForm.resetFields();
         newTemplateForm.resetFields();
+        modifiedModalForm.resetFields();
+        deleteTemplateForm.resetFields();
         pushForm.resetFields();
         setShowNewTemplateModal(false);
+        setShowDeleteTemplateModal(false);
         setShowTemplatePushModal(false);
         setShowNewTemplateFieldModal(false);
         setShowFieldModifiedModal(false);
@@ -128,6 +133,17 @@ const TemplatePage = () => {
                 queryTemplateList(String(res.data));
                 handleModalClose();
                 message.success("推送成功").then(_ => {});
+            }
+        })
+    }
+
+    const handleDeleteTemplate = () => {
+        const templateId = deleteTemplateForm.getFieldValue("template");
+        doDeleteRequest(TEMPLATE_API.DELETE, {templateId}, {
+            onSuccess: _ => {
+                queryTemplateList();
+                handleModalClose();
+                message.success("删除成功").then(_ => {});
             }
         })
     }
@@ -222,6 +238,11 @@ const TemplatePage = () => {
                     </Button>
                 </Form.Item>
                 <Form.Item style={{marginLeft: 20}}>
+                    <Button htmlType="reset" onClick={() => setShowDeleteTemplateModal(true)}>
+                        删除模板
+                    </Button>
+                </Form.Item>
+                <Form.Item style={{marginLeft: 20}}>
                     <Button htmlType="reset" onClick={() => setShowNewTemplateFieldModal(true)}>
                         新增字段
                     </Button>
@@ -275,8 +296,35 @@ const TemplatePage = () => {
                         allowClear
                         showSearch={true}
                         optionFilterProp={"label"}
+                        value={newTemplateForm.getFieldValue("fromTemplate")}
                         options={templateList}
-                        notFoundContent={"暂无命名空间"}
+                        notFoundContent={"暂无可复制模板"}
+                    />
+                </Form.Item>
+            </Form>
+        </Modal>
+        <Modal title="删除模板" open={showDeleteTemplateModal} onOk={handleModalClose} onCancel={handleModalClose}
+               footer={[
+                   <Space>
+                       <Button key="save" onClick={handleDeleteTemplate}>
+                           删除
+                       </Button>
+                       <Button key="close" onClick={handleModalClose}>
+                           关闭
+                       </Button>
+                   </Space>
+               ]}
+               style={{maxWidth: 600}}
+        >
+            <Form form={deleteTemplateForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
+                <Form.Item name={"template"} label={"目标模板"}>
+                    <Select
+                        placeholder="请选择要删除的模板"
+                        allowClear
+                        showSearch={true}
+                        optionFilterProp={"label"}
+                        options={templateList}
+                        notFoundContent={"暂无可复制模板"}
                     />
                 </Form.Item>
             </Form>

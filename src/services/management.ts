@@ -17,7 +17,8 @@ enum TEMPLATE_API {
     LIST_BY_APPID = '/api/management/template/selectByAppId',
     PAGE_FIELD_BY_CONDITION = '/api/management/template/selectFieldPageByCondition',
     UPDATE_FIELD = '/api/management/template/updateField',
-    NEW = '/api/management/template/insert'
+    NEW = '/api/management/template/insert',
+    DELETE = '/api/management/template/deleteById'
 }
 
 export {NAMESPACE_API, FIELD_API, LOG_API, TEMPLATE_API}
