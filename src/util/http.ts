@@ -14,7 +14,7 @@ function doGetRequest(
         method: 'GET',
         params
     }).then((res) => {
-        res.success ? recall.onSuccess(res) : recall.onError ? recall.onError(res) : message.error(res.errorMsg);
+        (res.success ? recall.onSuccess : recall.onError)?.(res);
     }).catch(() => {
         message.error("系统异常").then(_ => {});
     }).finally(() => {
@@ -35,7 +35,7 @@ function doPostRequest(
         method: 'POST',
         data
     }).then((res) => {
-        res.success ? recall.onSuccess(res) : recall.onError ? recall.onError(res) : message.error(res.errorMsg);
+        (res.success ? recall.onSuccess : recall.onError)?.(res);
     }).catch(() => {
         message.error("系统异常").then(_ => {});
     }).finally(() => {
@@ -56,7 +56,7 @@ function doDeleteRequest(
         method: 'DELETE',
         params
     }).then((res) => {
-        res.success ? recall.onSuccess(res) : recall.onError ? recall.onError(res) : message.error(res.errorMsg);
+        (res.success ? recall.onSuccess : recall.onError)?.(res);
     }).catch(() => {
         message.error("系统异常").then(_ => {});
     }).finally(() => {

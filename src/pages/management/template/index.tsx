@@ -86,6 +86,7 @@ const TemplatePage = () => {
         newTemplateForm.resetFields();
         modifiedModalForm.resetFields();
         deleteTemplateForm.resetFields();
+        addTemplateFieldForm.resetFields();
         pushForm.resetFields();
         setShowNewTemplateModal(false);
         setShowDeleteTemplateModal(false);
