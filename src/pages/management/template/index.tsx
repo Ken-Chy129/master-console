@@ -45,7 +45,6 @@ const TemplatePage = () => {
     }, []);
 
     useEffect(() => {
-        newTemplateForm.setFieldValue("fromTemplate", selectedTemplateId);
         if (selectedTemplateId) {
             conditionForm.resetFields();
             queryTemplateFieldList();
@@ -311,7 +310,6 @@ const TemplatePage = () => {
                         allowClear
                         showSearch={true}
                         optionFilterProp={"label"}
-                        value={newTemplateForm.getFieldValue("fromTemplate")}
                         options={templateList}
                         notFoundContent={"暂无可复制模板"}
                     />
