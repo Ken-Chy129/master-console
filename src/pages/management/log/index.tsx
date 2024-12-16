@@ -60,7 +60,7 @@ const ManagementLogPage = () => {
     useEffect(() => {
         if (history.state.usr) {
             form.setFieldValue("namespaceId", history.state.usr.namespaceId);
-            form.setFieldValue("fieldName", history.state.usr.fieldName);
+            form.setFieldValue("field", history.state.usr.fieldId);
         }
         queryManagementLog();
     }, []);

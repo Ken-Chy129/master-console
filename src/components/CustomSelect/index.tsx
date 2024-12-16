@@ -76,7 +76,7 @@ export const FieldSelect: React.FC<{
             optionFilterProp="label"
             style={style}
             options={fieldList}
-            value={form.getFieldValue("fieldName")}
+            value={form.getFieldValue("field")}
             onChange={onChange}
             notFoundContent={"该命名空间下暂无字段"}
         />

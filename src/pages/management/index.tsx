@@ -78,12 +78,12 @@ const ManagementPage = () => {
     };
 
     const handleShowLog = (field: Field) => {
-        const fieldName = field.name;
+        const fieldId = field.id;
         const namespaceId = field.namespaceId;
         history.push({
             pathname: '/management/log',
         }, {
-            fieldName, namespaceId
+            fieldId, namespaceId
         });
     }
 
