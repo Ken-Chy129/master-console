@@ -153,8 +153,8 @@ const TemplatePage = () => {
         const templateId = addTemplateFieldForm.getFieldValue("template");
         const namespaceId = addTemplateFieldForm.getFieldValue("namespaceId");
         const fieldId = addTemplateFieldForm.getFieldValue("field");
-        const filedValue = addTemplateFieldForm.getFieldValue("filedValue");
-        doPostRequest(TEMPLATE_API.ADD_FIELD, {templateId, namespaceId, fieldId, filedValue}, {
+        const fieldValue = addTemplateFieldForm.getFieldValue("fieldValue");
+        doPostRequest(TEMPLATE_API.ADD_FIELD, {templateId, namespaceId, fieldId, fieldValue}, {
             onSuccess: _ => {
                 queryTemplateList(templateId);
                 handleModalClose();
@@ -373,7 +373,7 @@ const TemplatePage = () => {
                         <FieldSelect form={addTemplateFieldForm}/>
                     </Form.Item>
                 </Form.Item>
-                <Form.Item name={"filedValue"} label={"字段值"}>
+                <Form.Item name={"fieldValue"} label={"字段值"}>
                     <Input.TextArea/>
                 </Form.Item>
             </Form>
