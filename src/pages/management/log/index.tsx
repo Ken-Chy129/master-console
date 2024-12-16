@@ -75,10 +75,10 @@ const ManagementLogPage = () => {
 
     const queryManagementLog = () => {
         const namespaceId = form.getFieldValue("namespaceId");
-        const name = form.getFieldValue("fieldName");
+        const fieldId = form.getFieldValue("field");
         const machines = form.getFieldValue("machines");
         const modifier = form.getFieldValue("modifier");
-        doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespaceId, name, machines, modifier, pageIndex, pageSize}, {
+        doGetRequest(LOG_API.PAGE_BY_CONDITION, {namespaceId, fieldId, machines, modifier, pageIndex, pageSize}, {
             onSuccess:  (res: any) => {
                 setTotal(res.total);
                 setManagementLog(res.data);
@@ -91,7 +91,7 @@ const ManagementLogPage = () => {
             <Form.Item name="namespaceId" label="命名空间">
                 <NamespaceSelect form={form}/>
             </Form.Item>
-            <Form.Item name="fieldName" label="字段名" style={{marginLeft: 20}}>
+            <Form.Item name="field" label="字段" style={{marginLeft: 20}}>
                 <FieldSelect form={form}/>
             </Form.Item>
             <Form.Item name="machines" label="机器列表" style={{marginLeft: 20}}>

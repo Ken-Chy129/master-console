@@ -68,11 +68,11 @@ const TemplatePage = () => {
 
     const queryTemplateFieldList = () => {
         const namespaceId = conditionForm.getFieldValue("namespaceId");
-        const fieldName = conditionForm.getFieldValue("fieldName");
+        const fieldId = conditionForm.getFieldValue("field");
         doGetRequest(TEMPLATE_API.PAGE_FIELD_BY_CONDITION, {
             templateId: selectedTemplateId,
             namespaceId,
-            fieldName,
+            fieldId,
             pageIndex,
             pageSize
         }, {
@@ -152,9 +152,9 @@ const TemplatePage = () => {
     const handleAddTemplateField = () => {
         const templateId = addTemplateFieldForm.getFieldValue("template");
         const namespaceId = addTemplateFieldForm.getFieldValue("namespaceId");
-        const fieldName = addTemplateFieldForm.getFieldValue("fieldName");
+        const fieldId = addTemplateFieldForm.getFieldValue("field");
         const filedValue = addTemplateFieldForm.getFieldValue("filedValue");
-        doPostRequest(TEMPLATE_API.ADD_FIELD, {templateId, namespaceId, fieldName, filedValue}, {
+        doPostRequest(TEMPLATE_API.ADD_FIELD, {templateId, namespaceId, fieldId, filedValue}, {
             onSuccess: _ => {
                 queryTemplateList(templateId);
                 handleModalClose();
@@ -232,7 +232,7 @@ const TemplatePage = () => {
                 <Form.Item name="namespaceId" label="命名空间">
                     <NamespaceSelect form={conditionForm}/>
                 </Form.Item>
-                <Form.Item name="fieldName" label="字段名" style={{marginLeft: 20}}>
+                <Form.Item name="field" label="字段" style={{marginLeft: 20}}>
                     <FieldSelect form={conditionForm}/>
                 </Form.Item>
                 <Form.Item style={{marginLeft: 30}}>
@@ -370,7 +370,7 @@ const TemplatePage = () => {
                     <Form.Item name={"namespaceId"} style={{marginBottom: 0}}>
                         <NamespaceSelect form={addTemplateFieldForm}/>
                     </Form.Item>
-                    <Form.Item name={"fieldName"} style={{marginTop: 10, marginBottom: 0}}>
+                    <Form.Item name={"field"} style={{marginTop: 10, marginBottom: 0}}>
                         <FieldSelect form={addTemplateFieldForm}/>
                     </Form.Item>
                 </Form.Item>

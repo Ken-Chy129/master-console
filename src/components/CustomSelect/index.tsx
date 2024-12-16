@@ -61,7 +61,7 @@ export const FieldSelect: React.FC<{
             onSuccess: (res: any) => {
                 res.data.forEach((field: any) => {
                     field.label = field.name;
-                    field.value = field.name;
+                    field.value = field.id;
                 });
                 setFieldList(res.data);
             }

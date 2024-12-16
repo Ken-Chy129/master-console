@@ -36,8 +36,8 @@ const ManagementPage = () => {
 
     const queryManagementField = () => {
         const namespaceId = conditionForm.getFieldValue("namespaceId");
-        const fieldName = conditionForm.getFieldValue("fieldName");
-        doGetRequest(FIELD_API.PAGE_BY_CONDITION, {namespaceId, fieldName, pageIndex, pageSize}, {
+        const fieldId = conditionForm.getFieldValue("field");
+        doGetRequest(FIELD_API.PAGE_BY_CONDITION, {namespaceId, fieldId, pageIndex, pageSize}, {
             onSuccess: (res: any) => {
                 setTotal(res.total);
                 setFieldList(res.data);
@@ -154,7 +154,7 @@ const ManagementPage = () => {
                         <Form.Item name="namespaceId" label="命名空间">
                             <NamespaceSelect form={conditionForm}/>
                         </Form.Item>
-                        <Form.Item name="fieldName" label="字段名" style={{marginLeft: 20}}>
+                        <Form.Item name="field" label="字段" style={{marginLeft: 20}}>
                             <FieldSelect form={conditionForm}/>
                         </Form.Item>
                         <Form.Item style={{marginLeft: 30}}>
