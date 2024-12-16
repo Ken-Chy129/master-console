@@ -52,6 +52,7 @@ export const FieldSelect: React.FC<{
 
     useEffect(() => {
         if (namespaceId) {
+            form.setFieldValue("field", null);
             queryNamespaceField();
         }
     }, [namespaceId]);
