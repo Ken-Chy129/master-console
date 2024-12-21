@@ -156,7 +156,7 @@ const TemplatePage = () => {
         const fieldValue = addTemplateFieldForm.getFieldValue("fieldValue");
         doPostRequest(TEMPLATE_API.ADD_FIELD, {templateId, namespaceId, fieldId, fieldValue}, {
             onSuccess: _ => {
-                queryTemplateList(templateId);
+                queryTemplateList(String(templateId));
                 handleModalClose();
                 message.success("添加成功").then(_ => {});
             }
