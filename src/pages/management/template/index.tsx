@@ -23,7 +23,7 @@ const TemplatePage = () => {
     const [addTemplateFieldForm] = Form.useForm();
     const [pushTemplateForm] = Form.useForm();
 
-    const [pushForm] = Form.useForm();
+    const [fieldPushForm] = Form.useForm();
     const [modifiedModalForm] = Form.useForm();
 
     const [templateList, setTemplateList] = useState<Template[]>([]);
@@ -90,7 +90,7 @@ const TemplatePage = () => {
         addTemplateFieldForm.resetFields();
         pushTemplateForm.resetFields();
         modifiedModalForm.resetFields();
-        pushForm.resetFields();
+        fieldPushForm.resetFields();
         setShowNewTemplateModal(false);
         setShowDeleteTemplateModal(false);
         setShowTemplatePushModal(false);
@@ -100,9 +100,8 @@ const TemplatePage = () => {
         setShowFieldDeleteModal(false);
     }
 
-    const handleFieldPushModal = (fieldId: string, fieldValue: string) => {
-        modifiedModalForm.setFieldValue("fieldId", fieldId);
-        modifiedModalForm.setFieldValue("fieldValue", fieldValue);
+    const handleFieldPushModal = (templateFieldId: string) => {
+        fieldPushForm.setFieldValue("templateFieldId", templateFieldId);
         setShowFieldPushModal(true);
     }
 
@@ -179,13 +178,14 @@ const TemplatePage = () => {
         });
     }
 
-    const handleValuePush = () => {
-        const name = modifiedModalForm.getFieldValue("fieldId");
-        const fieldValue = modifiedModalForm.getFieldValue("fieldValue");
-        const machineType = pushForm.getFieldValue("machineType");
-        const machines = pushForm.getFieldValue("machines");
-        doPostRequest("", {name, fieldValue, machineType, machines}, {
-            onSuccess: res => {
+    const handleFieldPush = () => {
+        const templateFieldId = fieldPushForm.getFieldValue("templateFieldId");
+        const machineType = fieldPushForm.getFieldValue("machineType");
+        const machines = fieldPushForm.getFieldValue("machines")?.join(',');
+        doPostRequest(TEMPLATE_API.PUSH_FIELD, {selectedTemplateId, templateFieldId, machineType, machines}, {
+            onSuccess: _ => {
+                handleModalClose();
+                message.success("推送成功").then(_ => {});
             }
         });
     }
@@ -220,7 +220,7 @@ const TemplatePage = () => {
             key: 'action',
             render: (text: string, templateField: { id: string, fieldId: string, fieldValue: string }) => (
                 <span>
-                  <Button type="primary" onClick={() => handleFieldPushModal(templateField.fieldId, templateField.fieldValue)}>
+                  <Button type="primary" onClick={() => handleFieldPushModal(templateField.id)}>
                     值推送
                   </Button>
                   <Button type="primary" style={{marginLeft: 20}} onClick={() => handleOpenFieldModifiedModal(templateField.id)}>
@@ -470,7 +470,7 @@ const TemplatePage = () => {
             onCancel={handleModalClose}
             footer={[
                 <Space>
-                    <Button key="back" onClick={handleValuePush}>
+                    <Button key="back" onClick={handleFieldPush}>
                         推送
                     </Button>
                     <Button key="back" onClick={handleModalClose}>
@@ -480,9 +480,9 @@ const TemplatePage = () => {
             ]}
             style={{maxWidth: 600}}
         >
-            <Form form={pushForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
+            <Form form={fieldPushForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
                 <Form.Item name="machineType" label="推送方式">
-                    <Radio.Group value={pushForm.getFieldValue("machineType")}>
+                    <Radio.Group value={fieldPushForm.getFieldValue("machineType")}>
                         <Radio value={"all"}>所有机器</Radio>
                         <Radio value={"specific"}>指定机器</Radio>
                     </Radio.Group>
@@ -494,7 +494,7 @@ const TemplatePage = () => {
                     {({getFieldValue}) => {
                         return getFieldValue('machineType') === 'specific' ? (
                             <Form.Item name="machines" label="推送机器">
-                                <MachineSelect mode="multiple" form={pushForm}/>
+                                <MachineSelect mode="multiple" form={fieldPushForm}/>
                             </Form.Item>
                         ) : null
                     }}

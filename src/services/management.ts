@@ -23,6 +23,7 @@ enum TEMPLATE_API {
     PUSH = '/api/management/template/push',
 
     UPDATE_FIELD = '/api/management/template/updateField',
+    PUSH_FIELD = '/api/management/template/pushField',
 }
 
 export {NAMESPACE_API, FIELD_API, LOG_API, TEMPLATE_API}
