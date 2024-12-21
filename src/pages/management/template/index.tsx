@@ -19,10 +19,12 @@ import {FieldSelect, MachineSelect, NamespaceSelect} from "@/components";
 const TemplatePage = () => {
     const [conditionForm] = Form.useForm();
     const [newTemplateForm] = Form.useForm();
-    const [modifiedModalForm] = Form.useForm();
     const [deleteTemplateForm] = Form.useForm();
     const [addTemplateFieldForm] = Form.useForm();
+    const [pushTemplateForm] = Form.useForm();
+
     const [pushForm] = Form.useForm();
+    const [modifiedModalForm] = Form.useForm();
 
     const [templateList, setTemplateList] = useState<Template[]>([]);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
@@ -84,9 +86,10 @@ const TemplatePage = () => {
 
     const handleModalClose = () => {
         newTemplateForm.resetFields();
-        modifiedModalForm.resetFields();
         deleteTemplateForm.resetFields();
         addTemplateFieldForm.resetFields();
+        pushTemplateForm.resetFields();
+        modifiedModalForm.resetFields();
         pushForm.resetFields();
         setShowNewTemplateModal(false);
         setShowDeleteTemplateModal(false);
@@ -135,7 +138,7 @@ const TemplatePage = () => {
                 handleModalClose();
                 message.success("推送成功").then(_ => {});
             }
-        })
+        });
     }
 
     const handleDeleteTemplate = () => {
@@ -146,7 +149,7 @@ const TemplatePage = () => {
                 handleModalClose();
                 message.success("删除成功").then(_ => {});
             }
-        })
+        });
     }
 
     const handleAddTemplateField = () => {
@@ -160,18 +163,31 @@ const TemplatePage = () => {
                 handleModalClose();
                 message.success("添加成功").then(_ => {});
             }
-        })
+        });
+    }
+
+    const handleTemplatePush = () => {
+        const templateId = pushTemplateForm.getFieldValue("template");
+        const machineType = pushTemplateForm.getFieldValue("machineType");
+        const machines = pushTemplateForm.getFieldValue("machines")?.join(',');
+        doPostRequest(TEMPLATE_API.PUSH, {templateId, machineType, machines}, {
+            onSuccess: _ => {
+                queryTemplateList(String(templateId));
+                handleModalClose();
+                message.success("推送成功").then(_ => {});
+            }
+        });
     }
 
     const handleValuePush = () => {
         const name = modifiedModalForm.getFieldValue("fieldId");
         const fieldValue = modifiedModalForm.getFieldValue("fieldValue");
-        const pushType = pushForm.getFieldValue("pushType");
+        const machineType = pushForm.getFieldValue("machineType");
         const machines = pushForm.getFieldValue("machines");
-        doPostRequest("", {name, fieldValue, pushType, machines}, {
+        doPostRequest("", {name, fieldValue, machineType, machines}, {
             onSuccess: res => {
             }
-        })
+        });
     }
 
     const columns = [
@@ -381,7 +397,7 @@ const TemplatePage = () => {
         <Modal title="模板推送" open={showTemplatePushModal} onOk={handleModalClose} onCancel={handleModalClose}
                footer={[
                    <Space>
-                       <Button key="save" onClick={handleNewTemplate}>
+                       <Button key="save" onClick={handleTemplatePush}>
                            保存
                        </Button>
                        <Button key="close" onClick={handleModalClose}>
@@ -391,8 +407,8 @@ const TemplatePage = () => {
                ]}
                style={{maxWidth: 600}}
         >
-            <Form form={newTemplateForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
-                <Form.Item name={"fromTemplate"} label={"选择模板"}>
+            <Form form={pushTemplateForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
+                <Form.Item name={"template"} label={"选择模板"}>
                     <Select
                         placeholder="请选择模板"
                         allowClear
@@ -402,20 +418,20 @@ const TemplatePage = () => {
                         notFoundContent={"暂无命名空间"}
                     />
                 </Form.Item>
-                <Form.Item name="pushType" label="推送方式">
-                    <Radio.Group value={pushForm.getFieldValue("pushType")}>
+                <Form.Item name="machineType" label="推送方式">
+                    <Radio.Group value={pushTemplateForm.getFieldValue("machineType")}>
                         <Radio value={"all"}>所有机器</Radio>
                         <Radio value={"specific"}>指定机器</Radio>
                     </Radio.Group>
                 </Form.Item>
                 <Form.Item
                     noStyle
-                    shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}
+                    shouldUpdate={(prevValues, currentValues) => prevValues.machineType !== currentValues.machineType}
                 >
                     {({getFieldValue}) => {
-                        return getFieldValue('pushType') === 'specific' ? (
+                        return getFieldValue('machineType') === 'specific' ? (
                             <Form.Item name="machines" label="推送机器">
-                                <MachineSelect mode="multiple" form={pushForm}/>
+                                <MachineSelect mode="multiple" form={pushTemplateForm}/>
                             </Form.Item>
                         ) : null
                     }}
@@ -465,18 +481,18 @@ const TemplatePage = () => {
             style={{maxWidth: 600}}
         >
             <Form form={pushForm} style={{marginTop: 30}} labelCol={{span: 5}} wrapperCol={{span: 18}}>
-                <Form.Item name="pushType" label="推送方式">
-                    <Radio.Group value={pushForm.getFieldValue("pushType")}>
+                <Form.Item name="machineType" label="推送方式">
+                    <Radio.Group value={pushForm.getFieldValue("machineType")}>
                         <Radio value={"all"}>所有机器</Radio>
                         <Radio value={"specific"}>指定机器</Radio>
                     </Radio.Group>
                 </Form.Item>
                 <Form.Item
                     noStyle
-                    shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}
+                    shouldUpdate={(prevValues, currentValues) => prevValues.machineType !== currentValues.machineType}
                 >
                     {({getFieldValue}) => {
-                        return getFieldValue('pushType') === 'specific' ? (
+                        return getFieldValue('machineType') === 'specific' ? (
                             <Form.Item name="machines" label="推送机器">
                                 <MachineSelect mode="multiple" form={pushForm}/>
                             </Form.Item>

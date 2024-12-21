@@ -49,7 +49,7 @@ const ManagementPage = () => {
         const field = fieldList.find(value => value.id === fieldId);
         pushForm.setFieldsValue({
             ...field,
-            pushType: "all",
+            machineType: "all",
             isUpdateTemplate: true
         });
         setShowModalIndex(1);
@@ -91,11 +91,11 @@ const ManagementPage = () => {
         const fieldId = pushForm.getFieldValue("id");
         const namespace = pushForm.getFieldValue("namespace")
         const value = pushForm.getFieldValue("fieldValue");
-        const pushType = pushForm.getFieldValue("pushType");
+        const machineType = pushForm.getFieldValue("machineType");
         const machines = pushForm.getFieldValue("machines")?.join(',');
         const isUpdateTemplate = pushForm.getFieldValue("isUpdateTemplate");
 
-        doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, pushType, machines, isUpdateTemplate}, {
+        doPostRequest(FIELD_API.PUSH, {fieldId, namespace, value, machineType, machines, isUpdateTemplate}, {
             onSuccess: _ => message.success("推送成功").then(_ => {}),
             onFinally: () => handleModalClose()
         });
@@ -223,18 +223,18 @@ const ManagementPage = () => {
                     <Form.Item name="fieldValue" label="变量值">
                         <Input.TextArea value={pushForm.getFieldValue("fieldValue")} onChange={(e) => pushForm.setFieldValue("fieldValue", e.target.value)} rows={4}/>
                     </Form.Item>
-                    <Form.Item name="pushType" label="推送方式">
-                        <Radio.Group value={pushForm.getFieldValue("pushType")}>
+                    <Form.Item name="machineType" label="推送方式">
+                        <Radio.Group value={pushForm.getFieldValue("machineType")}>
                             <Radio value={"all"}>所有机器</Radio>
                             <Radio value={"specific"}>指定机器</Radio>
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item
                         noStyle
-                        shouldUpdate={(prevValues, currentValues) => prevValues.pushType !== currentValues.pushType}
+                        shouldUpdate={(prevValues, currentValues) => prevValues.machineType !== currentValues.pumachineTypeshType}
                     >
                         {({getFieldValue}) => {
-                            return getFieldValue('pushType') === 'specific' ? (
+                            return getFieldValue('machineType') === 'specific' ? (
                                 <Form.Item name="machines" label="推送机器">
                                     <MachineSelect mode="multiple" form={pushForm}/>
                                 </Form.Item>
