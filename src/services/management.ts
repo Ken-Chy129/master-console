@@ -24,6 +24,7 @@ enum TEMPLATE_API {
 
     UPDATE_FIELD = '/api/management/template/updateField',
     PUSH_FIELD = '/api/management/template/pushField',
+    DELETE_FIELD = '/api/management/template/deleteField',
 }
 
 export {NAMESPACE_API, FIELD_API, LOG_API, TEMPLATE_API}

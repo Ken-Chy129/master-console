@@ -25,6 +25,7 @@ const TemplatePage = () => {
 
     const [fieldPushForm] = Form.useForm();
     const [modifiedModalForm] = Form.useForm();
+    const [deleteTemplateFieldForm] = Form.useForm();
 
     const [templateList, setTemplateList] = useState<Template[]>([]);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>();
@@ -111,18 +112,30 @@ const TemplatePage = () => {
     }
 
     const handleOpenFieldDeleteModal = (templateFieldId: string) => {
-        modifiedModalForm.setFieldValue("templateFieldId", templateFieldId);
+        deleteTemplateFieldForm.setFieldValue("templateFieldId", templateFieldId);
         setShowFieldDeleteModal(true);
     }
 
     const handleUpdateTemplateField = () => {
-        const id = modifiedModalForm.getFieldValue("templateFieldId");
+        const templateFieldId = modifiedModalForm.getFieldValue("templateFieldId");
         const fieldValue = modifiedModalForm.getFieldValue("value");
-        doPostRequest(TEMPLATE_API.UPDATE_FIELD, {id, fieldValue}, {
+        doPostRequest(TEMPLATE_API.UPDATE_FIELD, {templateFieldId, fieldValue}, {
             onSuccess: _ => {
                 queryTemplateFieldList();
                 handleModalClose();
-                message.success("推送成功").then(_ => {});
+                message.success("修改成功").then(_ => {});
+            }
+        });
+    }
+
+    const handleDeleteTemplateField = () => {
+        const templateFieldId = deleteTemplateFieldForm.getFieldValue("templateFieldId");
+        doDeleteRequest(TEMPLATE_API.DELETE_FIELD, {templateFieldId}, {
+            onSuccess: _ => {
+                queryTemplateList(String(selectedTemplateId));
+                queryTemplateFieldList();
+                handleModalClose();
+                message.success("删除成功").then(_ => {});
             }
         });
     }
@@ -159,6 +172,7 @@ const TemplatePage = () => {
         doPostRequest(TEMPLATE_API.ADD_FIELD, {templateId, namespaceId, fieldId, fieldValue}, {
             onSuccess: _ => {
                 queryTemplateList(String(templateId));
+                queryTemplateFieldList();
                 handleModalClose();
                 message.success("添加成功").then(_ => {});
             }
@@ -501,7 +515,7 @@ const TemplatePage = () => {
                 </Form.Item>
             </Form>
         </Modal>
-        <Modal title={"字段删除"} open={showFieldDeleteModal} onOk={handleModalClose}
+        <Modal title={"字段删除"} open={showFieldDeleteModal} onOk={handleDeleteTemplateField}
                onCancel={handleModalClose} style={{maxWidth: 340}}>
             <p style={{marginTop: 20}}>是否确认进行删除</p>
         </Modal>
