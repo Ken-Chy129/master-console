@@ -9,6 +9,8 @@ import { errorConfig } from './requestErrorConfig';
 import { currentUser as queryCurrentUser } from '@/services/common';
 import React from 'react';
 import {message} from "antd";
+import {doGetRequest} from "@/util/http";
+import {USER_API} from "@/services/user";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -23,15 +25,12 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async () => {
-    try {
-      const msg = await queryCurrentUser({
-        skipErrorHandler: true,
-      });
-      return msg.data;
-    } catch (error) {
-      history.push(loginPath);
-    }
-    return undefined;
+    let msg;
+    doGetRequest(USER_API.CURRENT, {}, {
+      onSuccess: res => msg = res.data,
+      onError: _ => history.push(loginPath)
+    })
+    return msg
   };
   // 如果不是登录页面，执行
   const { location } = history;

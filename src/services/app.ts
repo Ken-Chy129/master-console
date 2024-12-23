@@ -7,12 +7,12 @@ export async function getCategoryList() {
 }
 
 enum APP_API {
-    SAVE = '/api/master/save',
-    LIST = '/api/master/apps',
+    SAVE = '/api/app/save',
+    LIST = '/api/app/list',
 }
 
 enum MACHINE_API {
-    LIST = '/api/master/machines',
+    LIST = '/api/machine/list',
 }
 
 export {APP_API, MACHINE_API}
